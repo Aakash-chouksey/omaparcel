@@ -173,7 +173,11 @@ start_app() {
     return 0
   fi
   log "Starting Flask app detached..."
-  setsid .venv/bin/python app.py >"$APP_LOG" 2>&1 < /dev/null &
+  if command -v setsid >/dev/null 2>&1; then
+    setsid .venv/bin/python app.py >"$APP_LOG" 2>&1 < /dev/null &
+  else
+    nohup .venv/bin/python app.py >"$APP_LOG" 2>&1 < /dev/null &
+  fi
   for _ in $(seq 1 30); do
     app_running && { log "App is ready."; return 0; }
     sleep 1
@@ -188,7 +192,11 @@ open_tunnel() {
   # HTTP/2 over TCP survives networks where QUIC/UDP stalls (measured:
   # QUIC gave 90s stalls and 7s tiny responses through a VPN, HTTP/2
   # gives 1-7s uploads up to 2MB on the same path).
-  TUNNEL_TRANSPORT_PROTOCOL=http2 setsid cloudflared tunnel --url http://127.0.0.1:8080 >"$TUNNEL_LOG" 2>&1 < /dev/null &
+  if command -v setsid >/dev/null 2>&1; then
+    TUNNEL_TRANSPORT_PROTOCOL=http2 setsid cloudflared tunnel --url http://127.0.0.1:8080 >"$TUNNEL_LOG" 2>&1 < /dev/null &
+  else
+    TUNNEL_TRANSPORT_PROTOCOL=http2 nohup cloudflared tunnel --url http://127.0.0.1:8080 >"$TUNNEL_LOG" 2>&1 < /dev/null &
+  fi
   local url=""
   for _ in $(seq 1 60); do
     if [ -f "$TUNNEL_LOG" ]; then
