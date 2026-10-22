@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "codejack.tunnelshare",
+  "name": "TunnelShare",
+  "version": "1.0.0",
+  "author": "codejack",
+  "license": "MIT",
+  "description": "Share files and folders through the TunnelShare daemon. Every link expires, an optional 4 to 8 digit code gates it, and the sender sees download progress. Requires the TunnelShare daemon and tsctl.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "omarchy-plugin/BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "TunnelShare",
+    "description": "Share files and folders from the bar, with expiry, an optional code, and live download progress.",
+    "category": "Network",
+    "aliases": [
+      "share",
+      "files",
+      "tunnel"
+    ],
+    "defaultSection": "right",
+    "allowMultiple": false
+  }
+}

@@ -93,18 +93,18 @@ Panel {
   }
 
   function statusText() {
-    if (tsctlMissing) return "tsctl is not on PATH"
-    if (daemonDown) return "Daemon down."
-    if (statusData === null) return statusProblem !== "" ? "Cannot read state" : "Reading state…"
-    if (cloudflaredMissing) return "cloudflared is not installed"
+    if (tsctlMissing) return "TSCTL · NOT ON PATH"
+    if (daemonDown) return "DAEMON · DOWN"
+    if (statusData === null) return statusProblem !== "" ? "STATE · CANNOT READ" : "STATE · READING"
+    if (cloudflaredMissing) return "TUNNEL · CLOUDFLARED MISSING"
     if (tunnelState === "up") {
       var checked = statusData && statusData.tunnel ? statusData.tunnel.verified !== false : true
-      return "Live at " + publicHost() + (checked ? "" : (tunnelError !== "" ? " (unverified)" : " (checking)"))
+      return "LIVE · " + publicHost() + (checked ? "" : (tunnelError !== "" ? " · UNVERIFIED" : " · CHECKING"))
     }
-    if (tunnelState === "starting") return "Starting the tunnel"
-    if (tunnelState === "disabled") return "Tunnel disabled"
-    if (tunnelError !== "") return "Tunnel down. " + tunnelError
-    return "Tunnel down."
+    if (tunnelState === "starting") return "TUNNEL · CONNECTING"
+    if (tunnelState === "disabled") return "TUNNEL · OFF"
+    if (tunnelError !== "") return "DOWN · " + tunnelError
+    return "DOWN · TUNNEL"
   }
 
   function statusColor() {
@@ -579,23 +579,20 @@ Panel {
 
             Text {
               textFormat: Text.PlainText
+              text: "TUNNELSHARE"
+              color: root.dim
+              font.family: root.fontFamily
+              font.pixelSize: Style.font.caption
+              font.letterSpacing: 2
+            }
+
+            Text {
+              textFormat: Text.PlainText
               text: "Sharing"
               color: root.foreground
               font.family: root.fontFamily
               font.pixelSize: Style.font.title
               font.bold: true
-            }
-
-            Text {
-              textFormat: Text.PlainText
-              width: parent.width
-              visible: root.statusActionText() === ""
-              text: root.statusText()
-              color: root.statusColor()
-              font.family: root.fontFamily
-              font.pixelSize: Style.font.caption
-              elide: Text.ElideRight
-              maximumLineCount: 1
             }
           }
 
@@ -610,6 +607,12 @@ Panel {
             accent: root.accent
             onToggled: root.toggleSharing()
           }
+        }
+
+        Rectangle {
+          width: parent.width
+          height: 1
+          color: Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, 0.12)
         }
 
         // Status with an inline action when there is one to offer.
@@ -640,9 +643,9 @@ Panel {
             color: root.statusProblem !== "" ? root.dim : root.statusColor()
             font.family: root.fontFamily
             font.pixelSize: Style.font.caption
-            wrapMode: Text.WrapAnywhere
-            maximumLineCount: 2
-            elide: Text.ElideRight
+            wrapMode: Text.NoWrap
+            maximumLineCount: 1
+            elide: Text.ElideMiddle
           }
 
           Button {
@@ -700,6 +703,13 @@ Panel {
           font.family: root.fontFamily
           font.pixelSize: Style.font.caption
           wrapMode: Text.Wrap
+        }
+
+        PanelSectionHeader {
+          width: parent.width
+          text: "OPTIONS"
+          foreground: root.foreground
+          fontFamily: root.fontFamily
         }
 
         // ------------------------------------------------- share options
@@ -814,13 +824,22 @@ Panel {
 
             Text {
               textFormat: Text.PlainText
+              text: "LINK"
+              color: root.dim
+              font.family: root.fontFamily
+              font.pixelSize: Style.font.caption
+              font.letterSpacing: 2
+            }
+
+            Text {
+              textFormat: Text.PlainText
               width: parent.width
               text: root.makeLink()
               color: root.accent
               font.family: root.fontFamily
               font.pixelSize: Style.font.bodySmall
               elide: Text.ElideMiddle
-              wrapMode: Text.Wrap
+              wrapMode: Text.NoWrap
               maximumLineCount: 1
             }
 
@@ -862,11 +881,22 @@ Panel {
 
             Image {
               visible: root.qrPath !== ""
-              width: Math.min(parent.width, Style.space(150))
+              width: Math.min(parent.width, Style.space(120))
               height: visible ? width : 0
               cache: false
               fillMode: Image.PreserveAspectFit
               source: root.qrPath !== "" ? Util.fileUrl(root.qrPath) : ""
+            }
+
+            Text {
+              textFormat: Text.PlainText
+              visible: root.lastPin !== ""
+              height: visible ? implicitHeight : 0
+              text: "CODE"
+              color: root.dim
+              font.family: root.fontFamily
+              font.pixelSize: Style.font.caption
+              font.letterSpacing: 2
             }
 
             Row {
@@ -911,12 +941,28 @@ Panel {
         }
 
         // --------------------------------------------------- active links
-        PanelSectionHeader {
+        Item {
+          width: parent.width
           visible: root.showLinks
-          height: visible ? implicitHeight : 0
-          text: "ACTIVE LINKS"
-          foreground: root.foreground
-          fontFamily: root.fontFamily
+          height: visible ? activeHeader.implicitHeight : 0
+
+          PanelSectionHeader {
+            id: activeHeader
+            text: "ACTIVE LINKS"
+            foreground: root.foreground
+            fontFamily: root.fontFamily
+          }
+
+          Text {
+            anchors.right: parent.right
+            anchors.baseline: activeHeader.baseline
+            textFormat: Text.PlainText
+            text: root.shares.length === 1 ? "1 LINK" : root.shares.length + " LINKS"
+            color: root.dim
+            font.family: root.fontFamily
+            font.pixelSize: Style.font.caption
+            font.letterSpacing: 1
+          }
         }
 
         ListView {
@@ -956,22 +1002,39 @@ Panel {
           width: parent.width
           visible: root.showLinks && root.shares.length === 0
           height: visible ? implicitHeight : 0
-          implicitHeight: emptyText.implicitHeight + Style.space(18)
+          implicitHeight: emptyBlock.implicitHeight + Style.space(18)
           color: Style.normalFillFor(root.foreground, root.accent)
           borderSpec: Border.controlSpec("normal", root.foreground, root.accent)
           radius: Style.cornerRadius
 
-          Text {
-            id: emptyText
+          Column {
+            id: emptyBlock
             width: parent.width - Style.space(24)
             anchors.centerIn: parent
-            textFormat: Text.PlainText
-            text: "Nothing shared yet. Pick a file to start."
-            color: root.dim
-            font.family: root.fontFamily
-            font.pixelSize: Style.font.bodySmall
-            horizontalAlignment: Text.AlignHCenter
-            wrapMode: Text.Wrap
+            spacing: Style.space(4)
+
+            Text {
+              width: parent.width
+              textFormat: Text.PlainText
+              text: "NO ACTIVE LINKS"
+              color: root.foreground
+              font.family: root.fontFamily
+              font.pixelSize: Style.font.caption
+              font.letterSpacing: 2
+              font.bold: true
+              horizontalAlignment: Text.AlignHCenter
+            }
+
+            Text {
+              width: parent.width
+              textFormat: Text.PlainText
+              text: "Share a file to open one."
+              color: root.dim
+              font.family: root.fontFamily
+              font.pixelSize: Style.font.bodySmall
+              horizontalAlignment: Text.AlignHCenter
+              wrapMode: Text.Wrap
+            }
           }
         }
 
@@ -986,7 +1049,7 @@ Panel {
           color: root.urgent
           font.family: root.fontFamily
           font.pixelSize: Style.font.bodySmall
-          wrapMode: Text.Wrap
+          wrapMode: Text.WrapAnywhere
         }
       }
 

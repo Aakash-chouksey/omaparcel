@@ -20,6 +20,7 @@ The installer creates a venv, writes `~/.config/tunnelshare/config.json` and a
 when it finds Omarchy. It needs no sudo. The first run needs network for pip.
 
 Re-run `./install.sh` after you change `tsd.py`, a template, or a static file.
+The repo root also carries the Omarchy plugin manifest for `omarchy plugin add`.
 
 ## Share
 

@@ -30,9 +30,22 @@ appears in the right section of the bar. It is also reachable through the panel
 IPC target:
 
 ```sh
-omarchy shell toggle codejack.tunnelshare
-omarchy shell open codejack.tunnelshare
+omarchy-shell codejack.tunnelshare open
+omarchy-shell codejack.tunnelshare toggle
 ```
+
+## Install from the plugin store
+
+The repo root carries a manifest for `omarchy plugin add`:
+
+```sh
+omarchy plugin add https://github.com/Aakash-chouksey/tunnelshare.git
+```
+
+Install the daemon first (`./install.sh --enable`) so `tsctl` and the user unit
+exist. The store path adds only the panel. The root manifest points at
+`omarchy-plugin/BarWidget.qml`; the manifest in this folder is for the local
+symlink. Keep the two in sync.
 
 ## Requirements
 
@@ -71,38 +84,33 @@ shell string, so spaces survive.
 
 ## The panel
 
-1. `Sharing` with the toggle, then one status line: live URL, starting, tunnel
-   down with `Restart`, or daemon down with `Start sharing`.
+1. A `TUNNELSHARE` eyebrow, `Sharing` with the toggle, then one status line
+   with a signal dot: `LIVE · host`, `TUNNEL · CONNECTING`, `DOWN · ...`, or
+   `DAEMON · DOWN` with `Start sharing`.
 2. `Share files` as the filled button, `Share folder` beside it. Both show a
    spinner and disable while a share runs.
 3. `Require a code` with a 4 to 8 digit field, default `6`. Hours: 1, 24, 72.
    An optional note is collapsed behind `Add a note`.
-4. Result card after a share: the link, `Copy link`, `QR`, and when a code was
-   set, the code with `Copy code` and the line `Send the code in a separate
-   message.`
-5. Active links with note or file count, expiry (`in 23h`), copy and a
-   two-step revoke.
-6. `Nothing shared yet. Pick a file to start.`
+4. Result card after a share: a `LINK` label with the link, `Copy link`, `QR`,
+   and when a code was set, a `CODE` label with the code, `Copy code`, and the
+   line `Send the code in a separate message.`
+5. Active links with note or file count, expiry (`in 23h`), copy, a two-step
+   revoke, and a progress row: the active file, percent, `sent / total`, and a
+   thin bar. The count sits at the right of `ACTIVE LINKS`.
+6. `NO ACTIVE LINKS` with `Share a file to open one.`
 7. Failures land in one plain text line at the bottom, cleared by the next
    action.
 
 The bar icon reads real state: dim when off or the daemon is down, normal while
 the tunnel starts, accent when live, urgent on a tunnel error.
 
-## Screenshots
+## Screenshot
 
-Take them after the shell reload, in light and dark theme, and save them here:
-
-```
-screenshots/light.png
-screenshots/dark.png
-```
-
-Open the panel from the bar, then `omarchy screenshot`.
+![TunnelShare panel](screenshots/panel.png)
 
 ## Limits
 
-- `tsctl list --json` reports a file count per share, not file names, so a row
-  without a note reads `3 files` instead of the first file name.
+- A row without a note reads `3 files`. The progress line names the active
+  file.
 - A path that itself contains a newline cannot survive the line-per-path output
   of `omarchy file select`. Spaces are fine.

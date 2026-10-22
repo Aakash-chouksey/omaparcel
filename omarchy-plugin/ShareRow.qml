@@ -147,13 +147,14 @@ BorderSurface {
             color: root.dim
             font.family: root.fontFamily
             font.pixelSize: Style.font.caption
+            font.letterSpacing: 0.4
             elide: Text.ElideMiddle
             maximumLineCount: 1
           }
 
           Rectangle {
             width: parent.width
-            height: Math.max(2, Style.space(1))
+            height: Math.max(3, Style.space(1))
             radius: height / 2
             color: Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, 0.16)
 
