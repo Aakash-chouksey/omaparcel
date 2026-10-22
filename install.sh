@@ -167,4 +167,10 @@ else
   fi
 fi
 
+case ":$PATH:" in
+  *":$BIN_DIR:"*) ;;
+  *) step "note: add $BIN_DIR to PATH to run tsctl by name:"
+     step "  export PATH=\"$BIN_DIR:\$PATH\"" ;;
+esac
+
 step "done. try: tsctl status"

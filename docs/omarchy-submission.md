@@ -1,8 +1,8 @@
 # Omarchy marketplace submission
 
 This is the exact path to list TunnelShare at
-[plugins.omarchy.org](https://plugins.omarchy.org/). The crate is prepared but
-not submitted.
+[plugins.omarchy.org](https://plugins.omarchy.org/). The submission is prepared
+but not submitted.
 
 ## Before submitting
 
