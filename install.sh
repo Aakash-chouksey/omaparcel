@@ -36,6 +36,23 @@ fail() { echo "error: $*" >&2; exit 1; }
 command -v python3 >/dev/null 2>&1 || fail "python3 not found"
 [[ -f "$SRC/tsd.py" && -f "$SRC/tsctl.py" ]] || fail "run install.sh from the TunnelShare source tree"
 
+python3 - <<'PY' || fail "Python 3.10 or newer is required"
+import sys
+raise SystemExit(0 if sys.version_info >= (3, 10) else 1)
+PY
+
+HAVE_SYSTEMD=0
+if command -v systemctl >/dev/null 2>&1 && systemctl --user show-environment >/dev/null 2>&1; then
+  HAVE_SYSTEMD=1
+fi
+if [[ $ENABLE -eq 1 && $HAVE_SYSTEMD -eq 0 ]]; then
+  fail "systemd user services are unavailable. Follow docs/manual-setup.md to run tsd.py directly."
+fi
+if ! command -v cloudflared >/dev/null 2>&1; then
+  step "warning: cloudflared not found. Install it for a public link:"
+  step "  https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/"
+fi
+
 # 1. directories
 mkdir -p "$APP_DIR" "$DATA_DIR" "$CONF_DIR" "$UNIT_DIR" "$BIN_DIR"
 
@@ -90,13 +107,15 @@ fi
 chmod 0600 "$TOKEN"
 
 # 6. systemd user unit
-sed -e "s|__PYTHON__|$APP_DIR/.venv/bin/python|g" \
-    -e "s|__TSD__|$APP_DIR/tsd.py|g" \
-    -e "s|__APP_DIR__|$APP_DIR|g" \
-    "$SRC/deploy/tunnelshare.service" > "$UNIT"
-step "wrote $UNIT"
-if command -v systemctl >/dev/null 2>&1; then
+if [[ $HAVE_SYSTEMD -eq 1 ]]; then
+  sed -e "s|__PYTHON__|$APP_DIR/.venv/bin/python|g" \
+      -e "s|__TSD__|$APP_DIR/tsd.py|g" \
+      -e "s|__APP_DIR__|$APP_DIR|g" \
+      "$SRC/deploy/tunnelshare.service" > "$UNIT"
+  step "wrote $UNIT"
   systemctl --user daemon-reload || step "warning: systemctl --user daemon-reload failed"
+else
+  step "systemd user services not found; skipped the unit. See docs/manual-setup.md."
 fi
 
 # 7. tsctl on PATH
@@ -118,17 +137,33 @@ fi
 
 # 9. enable only with a flag
 if [[ $ENABLE -eq 1 ]]; then
-  command -v systemctl >/dev/null 2>&1 || fail "systemctl not found, cannot --enable"
   systemctl --user enable --now tunnelshare || fail "systemctl --user enable --now tunnelshare failed"
   step "enabled and started tunnelshare"
   if [[ -d "$PLUGIN_LINK" ]] && command -v omarchy >/dev/null 2>&1; then
     omarchy plugin enable codejack.tunnelshare || step "warning: omarchy plugin enable failed"
+    step "reload the shell to show the panel: omarchy restart shell"
+  fi
+  URL=""
+  for _ in $(seq 1 30); do
+    URL=$("$BIN_DIR/tsctl" status --json 2>/dev/null | python3 -c 'import json,sys; print(json.load(sys.stdin).get("public_base",""))' 2>/dev/null || true)
+    [[ -n "$URL" ]] && break
+    sleep 2
+  done
+  if [[ -n "$URL" ]]; then
+    step "live at $URL"
+    step "share with: tsctl share PATH --note \"what it is\""
+  else
+    step "the service is running; the tunnel is still connecting."
+    step "check with: tsctl status"
+    step "logs: journalctl --user -u tunnelshare -n 40"
   fi
 else
-  if systemctl --user is-enabled tunnelshare >/dev/null 2>&1; then
+  if [[ $HAVE_SYSTEMD -eq 1 ]] && systemctl --user is-enabled tunnelshare >/dev/null 2>&1; then
     step "already enabled. restart with: systemctl --user restart tunnelshare"
-  else
+  elif [[ $HAVE_SYSTEMD -eq 1 ]]; then
     step "not enabled. start with: systemctl --user enable --now tunnelshare"
+  else
+    step "manual start: see docs/manual-setup.md"
   fi
 fi
 

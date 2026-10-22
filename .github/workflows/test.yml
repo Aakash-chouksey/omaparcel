@@ -1,0 +1,27 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: API tests
+        run: bash tests/test_api.sh
+      - name: Progress test
+        run: bash tests/test_progress.sh
+      - name: Compile
+        run: python -m py_compile tsd.py tsctl.py
+      - name: Manifests parse
+        run: |
+          python -m json.tool manifest.json >/dev/null
+          python -m json.tool omarchy-plugin/manifest.json >/dev/null

@@ -1,26 +1,72 @@
 # TunnelShare
 
-Share a file or a folder from this machine with a friend. The friend opens a
-link and downloads. Nothing is uploaded to a third party. Links expire, and an
-optional 4 to 8 digit code gates the sensitive ones.
+Share a file or a folder from your own machine. Your friend opens a link and
+downloads. Nothing is uploaded to a third party, and every link expires.
 
-One daemon, two front ends. `tsd` serves the pages and the bytes and supervises
-a Cloudflare tunnel. `tsctl` is the only client. The Omarchy panel is a thin
-layer over `tsctl`.
+[![tests](https://github.com/Aakash-chouksey/tunnelshare/actions/workflows/test.yml/badge.svg)](https://github.com/Aakash-chouksey/tunnelshare/actions/workflows/test.yml)
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## Install
+| Omarchy panel | Friend page |
+| --- | --- |
+| <img src="omarchy-plugin/screenshots/panel.png" width="420" alt="TunnelShare panel"> | <img src="docs/screenshots/friend.png" width="250" alt="Friend page"> |
+
+One daemon, two front ends. `tsd` serves the friend page, owns the database, and
+supervises the Cloudflare tunnel. `tsctl` shares from the terminal. The Omarchy
+panel is a thin client over `tsctl`.
+
+## Quick start on Omarchy
 
 ```bash
+git clone https://github.com/Aakash-chouksey/tunnelshare.git
+cd tunnelshare
 ./install.sh --enable
-tsctl status
+omarchy restart shell
 ```
 
-The installer creates a venv, writes `~/.config/tunnelshare/config.json` and a
-0600 admin token, installs a systemd user unit, and links the Omarchy plugin
-when it finds Omarchy. It needs no sudo. The first run needs network for pip.
+Open the TunnelShare panel from the bar. Toggle Sharing, pick a file or folder,
+and copy the link. The installer prints the live URL when the tunnel connects.
+The code, if you set one, appears separately so you can send it in a second
+message.
 
-Re-run `./install.sh` after you change `tsd.py`, a template, or a static file.
-The repo root also carries the Omarchy plugin manifest for `omarchy plugin add`.
+## Quick start on any Linux or macOS
+
+```bash
+git clone https://github.com/Aakash-chouksey/tunnelshare.git
+cd tunnelshare
+./install.sh --enable          # Linux with systemd
+tsctl share ~/Pictures/Riverside --hours 24 --note "Riverside, October"
+```
+
+`tsctl` prints the link and the path. Send the link; send the code separately.
+
+macOS has no systemd. Use the manual path in
+[docs/manual-setup.md](docs/manual-setup.md) until the menu bar app lands
+([issue #2](https://github.com/Aakash-chouksey/tunnelshare/issues/2)).
+
+## Let an agent install it
+
+Copy the prompt in [AGENT_SETUP.md](AGENT_SETUP.md) into Claude, Codex, Cursor,
+or any agent with shell access. It checks the prerequisites, installs
+TunnelShare, verifies a real download through the public link, and reports the
+URL. It asks before using sudo and does not delete your files.
+
+## Requirements
+
+| Tool | Needed for |
+| --- | --- |
+| Python 3.10 or newer | the daemon and the tests |
+| `cloudflared` | the public link |
+| systemd user services | `--enable`, the panel toggle |
+| `qrencode` | the panel QR |
+| `wl-copy` | the panel copy buttons on Wayland |
+
+The installer creates its own venv and installs Flask. It never uses sudo. It
+warns when `cloudflared` is missing.
+
+## Manual setup
+
+[docs/manual-setup.md](docs/manual-setup.md) covers the no-systemd run, macOS,
+named tunnels, the config file, uninstall, and troubleshooting.
 
 ## Share
 
@@ -31,12 +77,34 @@ tsctl list
 tsctl revoke <id>
 ```
 
-The daemon reads files where they live. It never copies, moves, or deletes them.
-A folder is indexed once, so the page lists every file with its relative path.
+The daemon reads files in place. It never copies, moves, or deletes them. A
+folder is indexed once, so the page lists each file with its relative path.
 
-On Omarchy, open the TunnelShare panel from the bar. The toggle starts and stops
-the unit. Share files or a folder, add a note, set an optional code, then copy
-the link. The code appears separately, so you can send it in another message.
+On Omarchy, the panel does the same. It reads the real state, offers
+`Share files` and `Share folder`, an optional code, hours, a note, QR, copy,
+revoke, and download progress.
+
+The friend page is server rendered. Downloads are plain links with HTTP Range,
+so the browser resumes after a dropped connection. No JavaScript is needed to
+download.
+
+## How it works
+
+```text
+tsctl / Omarchy panel
+        |
+        v
+       tsd  ---- SQLite: shares + entries
+        |        files read in place
+        v
+   cloudflared  (quick or named tunnel)
+        |
+        v
+ Cloudflare edge  --->  friend browser
+```
+
+A share is one row and its entries. Expiry is derived. Revoking or expiring
+deletes rows only; the bytes stay on your disk.
 
 ## Tunnel
 
@@ -44,7 +112,7 @@ the link. The code appears separately, so you can send it in another message.
 
 - `auto` uses a named tunnel when `~/.cloudflared/config.yml` exists or
   `tunnel.name` is set. Otherwise it uses a quick tunnel.
-- `quick` needs no account. The hostname changes on every restart, and
+- `quick` needs no account. The hostname changes on each restart, and
   Cloudflare gives it no uptime guarantee.
 - `named` needs a Cloudflare account and a domain on Cloudflare. The hostname
   stays the same across restarts.
@@ -52,19 +120,18 @@ the link. The code appears separately, so you can send it in another message.
 Quick tunnels use HTTP/2 by default (`tunnel.transport`). QUIC stalls on some
 VPNs and Tailscale networks. The daemon probes the public URL against
 `/healthz` and reports `verified`. The probe is advisory. A local probe can miss
-while Cloudflare propagates a new hostname, and the link still works elsewhere.
+while the edge propagates a new hostname, and the link still works elsewhere.
 The tunnel is up as soon as `cloudflared` registers it. If the probe keeps
 failing, `verified` goes false and the status carries
 `local health check failed`, but the link stays visible.
 
 ## Speed
 
-The download speed is the sender's upstream link. On this machine a 128 MB
-file through a quick tunnel measured 3.1 MB/s. Four parallel range requests
-reached 3.4 MB/s, about 9% more. The upstream to Cloudflare measured
-3.7 MB/s. A 20 GB file therefore takes about 1.8 hours. The daemon serves
-from disk at over 1 GB/s on loopback, so the network is the limit, not the
-code.
+The download speed is the sender's upstream link. On this machine a 128 MB file
+through a quick tunnel measured 3.1 MB/s. Four parallel range requests reached
+3.4 MB/s, about 9% more. The upstream to Cloudflare measured 3.7 MB/s. A 20 GB
+file therefore takes about 1.8 hours. The daemon serves from disk at over
+1 GB/s on loopback, so the network is the limit, not the code.
 
 ## API
 
@@ -78,16 +145,9 @@ Admin, loopback only, needs `X-TS-Token`:
 
 - `GET /api/status`
 - `POST /api/shares` with `{paths, hours, note, pin}`
-- `GET /api/shares`
+- `GET /api/shares` (each share carries `progress`)
 - `DELETE /api/shares/<id>`
 - `POST /api/tunnel/restart`
-
-## Website
-
-`site/` holds the landing page: static HTML, one stylesheet, one small script.
-Serve it with `python3 -m http.server -d site` and open http://localhost:8000.
-The comparison dock works without a build step and the page degrades to a
-static price table without JavaScript.
 
 ## Tests
 
@@ -99,7 +159,8 @@ bash tests/test_tunnel.sh    # one real quick tunnel fetch
 
 `tests/test_api.sh` covers byte-identical downloads, Range, folder indexing,
 admin auth, the public port boundary, the PIN flow, lockout, revoke, expiry, and
-dotfile exclusion.
+dotfile exclusion. The tunnel test needs network and `cloudflared`; the other
+two do not. CI runs the first two.
 
 ## Security
 
@@ -113,14 +174,49 @@ dotfile exclusion.
 - Expiry deletes rows only. The sender's files are never touched.
 - Download progress is in memory only. It resets on restart and stores no
   client identity.
+- No telemetry and no third-party storage. The only network peer is Cloudflare.
 
-## Limits
+## Development
 
-- The sender's machine must stay awake and online while a friend downloads.
-- A quick tunnel URL changes on restart, so old links stop working. Use a named
-  tunnel when a link must survive a restart.
-- Cloudflare's free plan caps a request body at 100 MB. Response bodies have no
-  enforced limit, so downloads of any size work. Files are served from local
-  disk, not uploaded through the edge.
-- The free zone terms require a paid service for large media. Personal sharing
-  is fine. Do not publish this as a public file service on a free zone.
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/python tsd.py --no-tunnel       # http://127.0.0.1:8080
+```
+
+The design and contracts live in `docs/`: `direction.md`, `contract.md`,
+`design-brief.md`, `panel-spec.md`. The plugin is a bar widget; validate it with
+`omarchy plugin validate omarchy-plugin`, or validate the store layout from a
+clean copy of the repo root.
+
+## Uninstall
+
+```bash
+systemctl --user disable --now tunnelshare
+omarchy plugin remove codejack.tunnelshare
+rm -f ~/.config/systemd/user/tunnelshare.service ~/.local/bin/tsctl
+rm -rf ~/.local/share/tunnelshare ~/.config/tunnelshare
+```
+
+This removes the app, the database, and the config. Your shared files are not
+touched.
+
+## Omarchy marketplace
+
+The repo root is a valid Omarchy plugin source. Install the daemon first, then
+add the plugin:
+
+```bash
+omarchy plugin add https://github.com/Aakash-chouksey/tunnelshare.git
+```
+
+The plugin alone shows `tsctl is not on PATH` until the daemon is installed. The
+submission body and checklist are in
+[docs/omarchy-submission.md](docs/omarchy-submission.md).
+
+The landing page is in `site/`. Serve it with
+`python3 -m http.server -d site`.
+
+## License
+
+MIT. See [LICENSE](LICENSE).

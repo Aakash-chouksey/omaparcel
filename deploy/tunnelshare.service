@@ -3,6 +3,8 @@ Description=TunnelShare daemon
 Documentation=file://__APP_DIR__/README.md
 After=network-online.target
 Wants=network-online.target
+StartLimitIntervalSec=60
+StartLimitBurst=5
 
 [Service]
 Type=simple
