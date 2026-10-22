@@ -73,5 +73,4 @@ cmp -s "$TMP/blob.bin" "$TMP/got.bin" || fail "tunnel bytes differ"
 ok "fetched the share through the public URL with curl"
 
 pkill -f "cloudflared tunnel --url http://127.0.0.1:$PUB_PORT" 2>/dev/null || true
-PID="" # stop the daemon in cleanup
 echo "PASS"

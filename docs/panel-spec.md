@@ -85,7 +85,9 @@ One panel, width 380, max height 560, vertical scroll for the list.
    was set the code with `Copy code` and the line `Send the code in a separate
    message.`
 5. Active links. Rows with the note or first file name, `+N` for more, the
-   expiry as `in 23h`, copy, revoke.
+   expiry as `in 23h`, copy, revoke, and download progress. The progress row
+   shows the active file, its percent, `sent / total`, and a thin bar. Refresh
+   the share list every 3 seconds while the panel is open.
 6. Empty state. `Nothing shared yet. Pick a file to start.`
 7. Error line at the bottom, plain text, no modal. Clear it on the next action.
 

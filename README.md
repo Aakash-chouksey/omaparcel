@@ -83,6 +83,7 @@ static price table without JavaScript.
 
 ```bash
 bash tests/test_api.sh       # real HTTP against a temp data dir
+bash tests/test_progress.sh  # progress during a throttled download
 bash tests/test_tunnel.sh    # one real quick tunnel fetch
 ```
 
@@ -100,6 +101,8 @@ dotfile exclusion.
 - Folders are indexed once. Symlinks that leave the folder and dot entries are
   skipped. A download request carries an index, never a path.
 - Expiry deletes rows only. The sender's files are never touched.
+- Download progress is in memory only. It resets on restart and stores no
+  client identity.
 
 ## Limits
 

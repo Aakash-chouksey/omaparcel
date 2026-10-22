@@ -30,6 +30,20 @@ BorderSurface {
     ? (String(share.url || "") !== "" ? String(share.url) : String(share.path || ""))
     : ""
 
+  readonly property var progress: {
+    var list = share && share.progress ? share.progress : []
+    if (!list || list.length === 0) return null
+    for (var i = 0; i < list.length; i++) if (list[i].active) return list[i]
+    for (var j = 0; j < list.length; j++) if (Number(list[j].percent || 0) < 100) return list[j]
+    return list[list.length - 1]
+  }
+
+  readonly property int progressPercent: {
+    var p = progress
+    var n = p ? Number(p.percent || 0) : 0
+    return Math.max(0, Math.min(100, Math.round(n)))
+  }
+
   property bool confirming: false
 
   width: parent ? parent.width : implicitWidth
@@ -69,6 +83,14 @@ BorderSurface {
     return bits.join(" · ")
   }
 
+  function progressLabel() {
+    var p = progress
+    if (!p) return ""
+    var name = String(p.rel || "").split("/").pop()
+    var detail = fmtSize(p.total) !== "" ? " · " + fmtSize(p.sent) + " / " + fmtSize(p.total) : ""
+    return (name !== "" ? name + " · " : "") + progressPercent + "%" + detail
+  }
+
   Item {
     id: body
     anchors.left: parent.left
@@ -106,6 +128,43 @@ BorderSurface {
         font.pixelSize: Style.font.caption
         elide: Text.ElideRight
         maximumLineCount: 1
+      }
+
+      Item {
+        width: parent.width
+        visible: root.progress !== null
+        height: visible ? progressCol.implicitHeight : 0
+
+        Column {
+          id: progressCol
+          width: parent.width
+          spacing: Style.space(2)
+
+          Text {
+            textFormat: Text.PlainText
+            width: parent.width
+            text: root.progressLabel()
+            color: root.dim
+            font.family: root.fontFamily
+            font.pixelSize: Style.font.caption
+            elide: Text.ElideMiddle
+            maximumLineCount: 1
+          }
+
+          Rectangle {
+            width: parent.width
+            height: Math.max(2, Style.space(1))
+            radius: height / 2
+            color: Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, 0.16)
+
+            Rectangle {
+              width: parent.width * root.progressPercent / 100
+              height: parent.height
+              radius: parent.radius
+              color: root.accent
+            }
+          }
+        }
       }
     }
 

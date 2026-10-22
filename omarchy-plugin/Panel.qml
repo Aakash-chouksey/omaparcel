@@ -615,13 +615,24 @@ Panel {
         // Status with an inline action when there is one to offer.
         Item {
           width: parent.width
-          implicitHeight: Math.max(statusLine.implicitHeight, statusAction.implicitHeight)
-          visible: root.statusActionText() !== "" || root.statusProblem !== ""
+          implicitHeight: Math.max(statusLine.implicitHeight, statusAction.implicitHeight, statusDot.height)
+          visible: root.statusText() !== "" || root.statusProblem !== ""
+
+          Rectangle {
+            id: statusDot
+            width: Style.space(6)
+            height: width
+            radius: width / 2
+            color: root.statusProblem !== "" ? root.dim : root.statusColor()
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+          }
 
           Text {
             id: statusLine
             textFormat: Text.PlainText
-            anchors.left: parent.left
+            anchors.left: statusDot.right
+            anchors.leftMargin: Style.space(6)
             anchors.right: statusAction.visible ? statusAction.left : parent.right
             anchors.rightMargin: Style.space(8)
             anchors.verticalCenter: parent.verticalCenter
@@ -629,7 +640,7 @@ Panel {
             color: root.statusProblem !== "" ? root.dim : root.statusColor()
             font.family: root.fontFamily
             font.pixelSize: Style.font.caption
-            wrapMode: Text.Wrap
+            wrapMode: Text.WrapAnywhere
             maximumLineCount: 2
             elide: Text.ElideRight
           }
@@ -679,6 +690,16 @@ Panel {
             fontFamily: root.fontFamily
             onClicked: root.pickPaths(true)
           }
+        }
+
+        Text {
+          textFormat: Text.PlainText
+          width: parent.width
+          text: "Files stay on this machine. The link dies with the timer."
+          color: root.dim
+          font.family: root.fontFamily
+          font.pixelSize: Style.font.caption
+          wrapMode: Text.Wrap
         }
 
         // ------------------------------------------------- share options
@@ -931,16 +952,27 @@ Panel {
           }
         }
 
-        Text {
-          textFormat: Text.PlainText
+        BorderSurface {
           width: parent.width
           visible: root.showLinks && root.shares.length === 0
           height: visible ? implicitHeight : 0
-          text: "Nothing shared yet. Pick a file to start."
-          color: root.dim
-          font.family: root.fontFamily
-          font.pixelSize: Style.font.bodySmall
-          wrapMode: Text.Wrap
+          implicitHeight: emptyText.implicitHeight + Style.space(18)
+          color: Style.normalFillFor(root.foreground, root.accent)
+          borderSpec: Border.controlSpec("normal", root.foreground, root.accent)
+          radius: Style.cornerRadius
+
+          Text {
+            id: emptyText
+            width: parent.width - Style.space(24)
+            anchors.centerIn: parent
+            textFormat: Text.PlainText
+            text: "Nothing shared yet. Pick a file to start."
+            color: root.dim
+            font.family: root.fontFamily
+            font.pixelSize: Style.font.bodySmall
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.Wrap
+          }
         }
 
         // ---------------------------------------------------- error line

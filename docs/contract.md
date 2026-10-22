@@ -107,9 +107,15 @@ Return 401 otherwise. No CORS headers.
 |---|---|---|---|
 | GET | `/api/status` | | `{api:1, version, uptime_s, public_base, tunnel:{mode,state,url,restarts,error,verified}, shares}` |
 | POST | `/api/shares` | `{paths:[...], hours, note, pin}` | `{api:1, id, url, path, files, expires_at, pin_set}` |
-| GET | `/api/shares` | | `{api:1, shares:[{id, url, path, note, files, size, created_at, expires_at, pin_set}]}` |
+| GET | `/api/shares` | | `{api:1, shares:[{id, url, path, note, files, size, created_at, expires_at, pin_set, progress}]}` |
 | DELETE | `/api/shares/<id>` | | `{api:1, revoked:id}` |
 | POST | `/api/tunnel/restart` | | `{api:1, tunnel:{...}}` |
+
+Every share in `/api/shares` carries `progress`, a list of
+`{idx, rel, sent, total, percent, active, updated_at}`. `sent` is the highest
+byte offset the daemon served for that file. `active` turns false after 60
+seconds without an update. The tracker is in memory, resets when the daemon
+restarts, and stores no client address or agent.
 
 Validation at the boundary:
 

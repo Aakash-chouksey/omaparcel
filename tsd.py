@@ -688,8 +688,78 @@ def render_notice(title, text):
     return render_template("notice.html", title=title, text=text)
 
 
+# ------------------------------------------------------------------ progress
+class Transfers:
+    """In-memory download progress per (share, file).
+
+    Only byte counts. No client address, agent, or identity is stored.
+    Progress resets when the daemon restarts.
+    """
+
+    def __init__(self):
+        self._lock = threading.Lock()
+        self._rows = {}
+
+    def begin(self, share_id, idx, total, start=0, rel=""):
+        now = int(time.time())
+        with self._lock:
+            row = self._rows.setdefault((share_id, idx), {})
+            if start == 0:
+                row["sent"] = 0
+                row["started"] = now
+            else:
+                row["sent"] = max(int(start), int(row.get("sent", 0)))
+                row.setdefault("started", now)
+            row.update({"total": int(total), "active": True, "updated": now,
+                        "rel": rel or row.get("rel", "")})
+
+    def update(self, share_id, idx, sent, active=True):
+        with self._lock:
+            row = self._rows.get((share_id, idx))
+            if row is None:
+                return
+            row["sent"] = max(int(sent), int(row.get("sent", 0)))
+            row["active"] = bool(active)
+            row["updated"] = int(time.time())
+
+    def finish(self, share_id, idx, sent):
+        with self._lock:
+            row = self._rows.get((share_id, idx))
+            if row is None:
+                return
+            row["sent"] = max(int(sent), int(row.get("sent", 0)))
+            row["active"] = False
+            row["updated"] = int(time.time())
+
+    def list(self, share_id):
+        now = int(time.time())
+        with self._lock:
+            out = []
+            for key, row in self._rows.items():
+                if key[0] != share_id:
+                    continue
+                total = max(0, int(row.get("total", 0)))
+                sent = min(max(0, int(row.get("sent", 0))), total) if total else 0
+                out.append({
+                    "idx": key[1],
+                    "rel": row.get("rel", ""),
+                    "sent": sent,
+                    "total": total,
+                    "percent": int(sent * 100 / total) if total else 0,
+                    "active": bool(row.get("active")) and now - int(row.get("updated", 0)) < 60,
+                    "updated_at": int(row.get("updated", 0)),
+                })
+            out.sort(key=lambda item: (not item["active"], -item["sent"]))
+            return out
+
+    def drop(self, share_id):
+        with self._lock:
+            for key in [k for k in self._rows if k[0] == share_id]:
+                del self._rows[key]
+
+
 # ------------------------------------------------------------------ apps
-def make_apps(db_path, token, cfg, tunnel, started_at):
+def make_apps(db_path, token, cfg, tunnel, started_at, transfers):
     public = Flask(
         "tsd-public",
         template_folder=os.path.join(BASE_DIR, "templates"),
@@ -802,8 +872,32 @@ def make_apps(db_path, token, cfg, tunnel, started_at):
         if row is None or not os.path.isfile(row["path"]):
             return render_notice("File not found", "The sender may have moved or removed it."), 404
         name = os.path.basename(row["path"]) or "download"
-        return send_file(row["path"], mimetype=row["mime"], as_attachment=True,
-                         download_name=name, conditional=True)
+        response = send_file(row["path"], mimetype=row["mime"], as_attachment=True,
+                             download_name=name, conditional=True)
+        if response.status_code in (200, 206) and request.method != "HEAD":
+            start = 0
+            content_range = response.headers.get("Content-Range", "")
+            if content_range:
+                try:
+                    start = int(content_range.split(" ", 1)[1].split("-", 1)[0])
+                except (IndexError, ValueError):
+                    start = 0
+            transfers.begin(share_id, idx, row["size"], start, row["rel"])
+            body = response.response
+
+            def counted():
+                sent = start
+                try:
+                    for chunk in body:
+                        data = chunk.encode() if isinstance(chunk, str) else chunk
+                        sent += len(data)
+                        transfers.update(share_id, idx, sent, True)
+                        yield data
+                finally:
+                    transfers.finish(share_id, idx, sent)
+
+            response.response = counted()
+        return response
 
     # -- admin: every request needs the token and a loopback origin
     @admin.before_request
@@ -830,6 +924,7 @@ def make_apps(db_path, token, cfg, tunnel, started_at):
             "created_at": share["created_at"],
             "expires_at": share["expires_at"],
             "pin_set": share["pin_set"],
+            "progress": transfers.list(share["id"]),
         }
 
     @admin.get("/api/status")
@@ -905,6 +1000,7 @@ def make_apps(db_path, token, cfg, tunnel, started_at):
 
     @admin.delete("/api/shares/<share_id>")
     def api_revoke(share_id):
+        transfers.drop(share_id)
         db().execute("DELETE FROM entries WHERE share_id = ?", (share_id,))
         db().execute("DELETE FROM shares WHERE id = ?", (share_id,))
         db().commit()
@@ -961,7 +1057,8 @@ def main():
 
     started_at = int(time.time())
     tunnel = Tunnel(cfg["tunnel"], cfg["public_port"], enabled=not args.no_tunnel)
-    public, admin = make_apps(db_path, token, cfg, tunnel, started_at)
+    transfers = Transfers()
+    public, admin = make_apps(db_path, token, cfg, tunnel, started_at, transfers)
 
     try:
         public_srv = make_server("127.0.0.1", cfg["public_port"], public, threaded=True)
