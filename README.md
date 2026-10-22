@@ -56,6 +56,15 @@ The tunnel is up as soon as `cloudflared` registers it. If the probe keeps
 failing, `verified` goes false and the status carries
 `local health check failed`, but the link stays visible.
 
+## Speed
+
+The download speed is the sender's upstream link. On this machine a 128 MB
+file through a quick tunnel measured 3.1 MB/s. Four parallel range requests
+reached 3.4 MB/s, about 9% more. The upstream to Cloudflare measured
+3.7 MB/s. A 20 GB file therefore takes about 1.8 hours. The daemon serves
+from disk at over 1 GB/s on loopback, so the network is the limit, not the
+code.
+
 ## API
 
 Public, tunneled:
