@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Code needed &middot; TunnelShare{% endblock %}
+{% block content %}
+<main class="sheet sheet--gate">
+  <header class="docket">
+    <p class="eyebrow">TunnelShare <span class="sep">/</span> <span class="code">{{ code }}</span></p>
+  </header>
+
+  <h1 class="note">This link needs a code</h1>
+  <p class="sub">{{ count }} file{{ '' if count == 1 else 's' }} <span class="sep">/</span> {{ total }}{% if note %} <span class="sep">/</span> {{ note }}{% endif %}</p>
+
+  <form class="unlock" method="post" action="/s/{{ share_id }}/unlock">
+    <label class="lbl" for="pin">Code</label>
+    <div class="field">
+      <input class="code-input" id="pin" name="pin" type="text" inputmode="numeric"
+             pattern="[0-9]{4,8}" maxlength="8" autocomplete="one-time-code"
+             spellcheck="false" required autofocus
+             aria-invalid="{{ 'true' if message else 'false' }}"
+             aria-describedby="{{ 'hint err' if message else 'hint' }}">
+      <button class="btn" type="submit"><span class="t">Unlock</span></button>
+    </div>
+    <p class="hint" id="hint">Ask the sender for the code. It travels separately from the link.</p>
+    {% if message %}<p class="err" id="err" role="alert">{{ message }}</p>{% endif %}
+  </form>
+</main>
+{% endblock %}

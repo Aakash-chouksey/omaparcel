@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>This link needs a code — TunnelShare</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500&family=Instrument+Serif&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="sheet">
+  <header class="docket">
+    <p class="eyebrow">TUNNELSHARE / <span class="code">7KQ2M4</span></p>
+  </header>
+
+  <h1 class="note">This link needs a code</h1>
+  <p class="sub">Riverside, October / 5 files / 486 MB</p>
+
+  <form class="unlock" method="post" action="#" data-tries="3">
+    <label class="lbl" for="code">6 digit code</label>
+    <div class="field">
+      <input class="code-input" id="code" name="code" type="text" inputmode="numeric"
+             autocomplete="one-time-code" maxlength="6" spellcheck="false"
+             aria-describedby="hint err">
+      <button class="btn" type="submit">Unlock</button>
+    </div>
+    <p class="hint" id="hint">Ask the sender for the code. It travels separately from the link.</p>
+    <p class="err" id="err" role="alert" hidden>That code is not right. 3 tries left.</p>
+    <p class="err" id="locked" role="alert" hidden>Too many tries. Ask the sender for a new link.</p>
+  </form>
+</main>
+
+<nav class="devbar" data-dev aria-label="Prototype states">
+  <a href="folder.html">folder</a>
+  <a href="single.html">single</a>
+  <a href="pin.html" aria-current="page">pin</a>
+  <a href="expired.html">expired</a>
+</nav>
+
+<script>
+(function () {
+  var form = document.querySelector('.unlock');
+  var input = document.getElementById('code');
+  var err = document.getElementById('err');
+  var locked = document.getElementById('locked');
+  var tries = Number(form.getAttribute('data-tries')) || 3;
+  var fails = 0;
+  var dead = false;
+
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+    if (dead) { return; }
+
+    /* no real code in a prototype: every submit fails, then locks */
+    fails = fails + 1;
+    if (fails >= tries) {
+      dead = true;
+      err.hidden = true;
+      locked.hidden = false;
+      input.setAttribute('aria-invalid', 'true');
+      input.disabled = true;
+      return;
+    }
+    err.textContent = 'That code is not right. ' + (tries - fails + 1) + ' tries left.';
+    err.hidden = false;
+    input.setAttribute('aria-invalid', 'true');
+    input.focus();
+    input.select();
+  });
+
+  input.addEventListener('input', function () {
+    input.value = input.value.replace(/\D/g, '').slice(0, 6);
+    if (!err.hidden) { err.hidden = true; }
+    input.removeAttribute('aria-invalid');
+  });
+})();
+</script>
+</body>
+</html>

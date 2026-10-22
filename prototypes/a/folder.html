@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Riverside, October — TunnelShare</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500&family=Instrument+Serif&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="sheet">
+  <header class="docket">
+    <p class="eyebrow">TUNNELSHARE / <span class="code">7KQ2M4</span></p>
+    <button class="copy" type="button" data-copy="https://7kq2m4.tunnel.share">
+      <span class="t" aria-live="polite">Copy link</span>
+    </button>
+  </header>
+
+  <h1 class="note">Riverside, October</h1>
+  <p class="sub">5 files / 486 MB / expires in 23 hours</p>
+
+  <table class="manifest">
+    <thead>
+      <tr><th scope="col">item</th><th scope="col">type</th><th scope="col">size</th></tr>
+    </thead>
+    <tbody>
+      <tr class="row">
+        <th scope="row" class="item"><a href="#">drone-pass.mp4</a></th>
+        <td class="type">MP4</td>
+        <td class="size"><span class="swap"><span class="bytes">412.6 MB</span><span class="get">Download <span aria-hidden="true">&rarr;</span></span></span></td>
+      </tr>
+      <tr class="row">
+        <th scope="row" class="item"><a href="#">IMG_2041.HEIC</a></th>
+        <td class="type">HEIC</td>
+        <td class="size"><span class="swap"><span class="bytes">24.8 MB</span><span class="get">Download <span aria-hidden="true">&rarr;</span></span></span></td>
+      </tr>
+      <tr class="row">
+        <th scope="row" class="item"><a href="#">IMG_2042.HEIC</a></th>
+        <td class="type">HEIC</td>
+        <td class="size"><span class="swap"><span class="bytes">25.1 MB</span><span class="get">Download <span aria-hidden="true">&rarr;</span></span></span></td>
+      </tr>
+      <tr class="row">
+        <th scope="row" class="item"><a href="#">locations.pdf</a></th>
+        <td class="type">PDF</td>
+        <td class="size"><span class="swap"><span class="bytes">1.2 MB</span><span class="get">Download <span aria-hidden="true">&rarr;</span></span></span></td>
+      </tr>
+      <tr class="row">
+        <th scope="row" class="item"><a href="#">packing-list.md</a></th>
+        <td class="type">MD</td>
+        <td class="size"><span class="swap"><span class="bytes">3 KB</span><span class="get">Download <span aria-hidden="true">&rarr;</span></span></span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="total">
+    <div>
+      <p class="sum"><span class="k">total</span> 486 MB</p>
+      <p class="exp"><span class="k">expires</span> <span class="v" data-exp>23 Oct, 18:40</span></p>
+    </div>
+    <p class="stamp"><span>expires</span><span>23 oct 18:40</span></p>
+  </div>
+
+  <p class="foot"><span>Served from the sender's laptop. If the link stops working, ask for a new one.</span></p>
+</main>
+
+<nav class="devbar" data-dev aria-label="Prototype states">
+  <a href="folder.html" aria-current="page">folder</a>
+  <a href="single.html">single</a>
+  <a href="pin.html">pin</a>
+  <a href="expired.html">expired</a>
+</nav>
+
+<script>
+(function () {
+  var MIN = 60000;
+  var until = Date.now() + 23 * 60 * MIN;
+  var out = document.querySelector('[data-exp]');
+
+  function tick() {
+    var left = until - Date.now();
+    var text;
+    if (left <= 0) { text = 'now'; }
+    else if (left < 60 * MIN) {
+      out.parentNode.classList.add('soon');
+      text = 'in ' + Math.max(1, Math.round(left / MIN)) + ' min';
+    } else {
+      text = 'in ' + Math.round(left / (60 * MIN)) + ' hours';
+    }
+    out.textContent = text;
+  }
+  if (out) { tick(); setInterval(tick, MIN); }
+
+  var btn = document.querySelector('.copy');
+  if (btn) {
+    var label = btn.querySelector('.t');
+    var idle = label.textContent;
+    var reset = function () { setTimeout(function () { label.textContent = idle; }, 1600); };
+    var done = function (msg) { label.textContent = msg; reset(); };
+    var selectCode = function (finish) {
+      var code = document.querySelector('.code');
+      if (code) {
+        var range = document.createRange();
+        range.selectNodeContents(code);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+      finish('Copy failed');
+    };
+    btn.addEventListener('click', function () {
+      var url = btn.getAttribute('data-copy');
+      var settled = false;
+      var finish = function (msg) { if (!settled) { settled = true; done(msg); } };
+      var fallback = function () { selectCode(finish); };
+      /* the clipboard promise can hang on a permission prompt */
+      setTimeout(function () { if (!settled) { fallback(); } }, 1000);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function () { finish('Copied'); }, fallback);
+      } else {
+        fallback();
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>

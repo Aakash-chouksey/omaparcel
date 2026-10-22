@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Code required — TunnelShare</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page">
+  <aside class="rail" aria-label="Share details">
+    <p class="spine"><span>TUNNELSHARE</span><span class="share">/ 7KQ2M4</span></p>
+    <div class="gauge">
+      <p class="label">Expiry</p>
+      <div class="track" style="--t:52%"><span class="tick"></span></div>
+      <p class="expiry"><time datetime="2026-10-23T11:35">23 Oct, 11:35</time></p>
+    </div>
+    <p class="count"><span class="num" aria-hidden="true">05</span><span class="unit">files · 486 MB</span></p>
+  </aside>
+
+  <main class="stage">
+    <h1>This link needs a code</h1>
+    <p class="sub">Riverside, October / 5 files / 486 MB</p>
+
+    <form class="pin-form" data-pin method="post" action="#">
+      <label class="label" for="code">6 digit code</label>
+      <div class="pin">
+        <input class="code" id="code" name="code" type="text" inputmode="numeric"
+               pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code"
+               aria-describedby="help" required>
+        <button class="unlock" type="submit" data-submit>Unlock</button>
+      </div>
+      <p class="alert" data-alert role="alert"></p>
+    </form>
+
+    <p class="help" id="help">Ask the sender for the code. It travels separately from the link.</p>
+  </main>
+</div>
+
+<nav class="devbar" data-dev aria-label="Prototype states">
+  <a href="folder.html">Folder</a><a href="single.html">Single</a><a href="pin.html" aria-current="page">Pin</a><a href="expired.html">Expired</a>
+</nav>
+
+<script>
+(function () {
+  var form = document.querySelector("[data-pin]");
+  var input = document.getElementById("code");
+  var msg = document.querySelector("[data-alert]");
+  var button = document.querySelector("[data-submit]");
+  var remaining = 3;
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    if (form.dataset.locked) return;
+
+    if (remaining <= 0) {
+      form.dataset.locked = "true";
+      msg.textContent = "Too many tries. Ask the sender for a new link.";
+      msg.classList.add("is-locked");
+      input.disabled = true;
+      button.disabled = true;
+      button.textContent = "Locked";
+      return;
+    }
+
+    msg.textContent =
+      "That code is not right. " + remaining +
+      (remaining === 1 ? " try left." : " tries left.");
+    remaining -= 1;
+    input.select();
+  });
+})();
+</script>
+</body>
+</html>

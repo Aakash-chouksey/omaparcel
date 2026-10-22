@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} &middot; TunnelShare{% endblock %}
+{% block content %}
+<main class="sheet">
+  <header class="docket docket--end">
+    <p class="stamp stamp--void"><span>void</span></p>
+  </header>
+  <h1 class="note">{{ title }}</h1>
+  <p class="prose">{{ text }}</p>
+</main>
+{% endblock %}

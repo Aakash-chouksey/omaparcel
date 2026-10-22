@@ -1,117 +1,104 @@
-# TunnelShare MVP
+# TunnelShare
 
-Live landing page: https://tunnelshare.billuu-probe.workers.dev
+Share a file or a folder from this machine with a friend. The friend opens a
+link and downloads. Nothing is uploaded to a third party. Links expire, and an
+optional 4 to 8 digit code gates the sensitive ones.
 
-Ephemeral, code-gated file sharing designed to sit behind a Cloudflare quick tunnel.
-Upload a file &rarr; get a link (`/s/<id>`) plus a 6-digit code shown once &rarr;
-the recipient enters the code to download. Shares self-destruct on expiry or
-download budget.
+One daemon, two front ends. `tsd` serves the pages and the bytes and supervises
+a Cloudflare tunnel. `tsctl` is the only client. The Omarchy panel is a thin
+layer over `tsctl`.
 
-## Quickstart
-
-```bash
-pip install -r requirements.txt
-python app.py
-# in another terminal (HTTP/2 transport: QUIC stalls through VPNs):
-TUNNEL_TRANSPORT_PROTOCOL=http2 cloudflared tunnel --url http://localhost:8080
-```
-
-Or one-shot:
+## Install
 
 ```bash
-./setup.sh
-./share.sh
+./install.sh --enable
+tsctl status
 ```
 
-Hand your coding agent `AGENT_SETUP.md`. It holds a copy-paste prompt
-that installs, runs, verifies, and tunnels the project with no guidance.
+The installer creates a venv, writes `~/.config/tunnelshare/config.json` and a
+0600 admin token, installs a systemd user unit, and links the Omarchy plugin
+when it finds Omarchy. It needs no sudo. The first run needs network for pip.
 
-Open the printed `https://*.trycloudflare.com` URL on your phone / send to a friend.
+Re-run `./install.sh` after you change `tsd.py`, a template, or a static file.
 
-Owner console needs the token link or a localhost visit. Token rotates every restart.
-Share links (`/s/<id>`) need no token.
+## Share
 
-## Large files and resume
+```bash
+tsctl share ~/Pictures/Riverside --hours 24 --note "Riverside, October"
+tsctl share ~/contract.pdf --pin 246810 --note "Contract, signed"
+tsctl list
+tsctl revoke <id>
+```
 
-Every request body stays under Cloudflare's 100 MB cap, so uploads are chunked
-(16 MB each). A dropped connection re-sends at most one chunk, and the client
-asks `/api/upload/status` for the chunks the server already holds, so a reload
-resumes instead of restarting. A chunk retry writes the same bytes at the same
-offset, so it is idempotent.
+The daemon reads files where they live. It never copies, moves, or deletes them.
+A folder is indexed once, so the page lists every file with its relative path.
 
-Downloads stream and honor `Range`, so a dropped download resumes from the
-exact byte it stopped at with up to 5 backoff retries plus Pause and Resume.
-Whole-file fetches burn one download from the budget. Resume chunks do not.
+On Omarchy, open the TunnelShare panel from the bar. The toggle starts and stops
+the unit. Share files or a folder, add a note, set an optional code, then copy
+the link. The code appears separately, so you can send it in another message.
 
-`TS_MAX_BYTES` sets the upload cap (default 10 GB). Disk, not the edge, is the
-real limit.
+## Tunnel
 
-Run the upload checks with `python3 check_upload.py`.
+`tunnel.mode` is `auto`, `quick`, or `named`.
+
+- `auto` uses a named tunnel when `~/.cloudflared/config.yml` exists or
+  `tunnel.name` is set. Otherwise it uses a quick tunnel.
+- `quick` needs no account. The hostname changes on every restart, and
+  Cloudflare gives it no uptime guarantee.
+- `named` needs a Cloudflare account and a domain on Cloudflare. The hostname
+  stays the same across restarts.
+
+Quick tunnels use HTTP/2 by default (`tunnel.transport`). QUIC stalls on some
+VPNs and Tailscale networks. The daemon probes the public URL against
+`/healthz` and reports `verified`. The probe is advisory. A local probe can miss
+while Cloudflare propagates a new hostname, and the link still works elsewhere.
+The tunnel is up as soon as `cloudflared` registers it.
 
 ## API
 
-| Method | Route | Notes |
-|---|---|---|
-| `GET /` | upload UI | |
-| `POST /api/upload/init` | JSON `{filename, size}` | opens a `PENDING` share, preallocates the file, returns `{id, chunk_size, chunks}` |
-| `PUT /api/upload/chunk` | headers `X-Upload-Id`, `X-Chunk-Index`, raw body | writes one chunk at its offset, returns `{received, chunks}` |
-| `GET /api/upload/status?id=` | | `{status, received:[idx], chunks, chunk_size, size_bytes}` |
-| `POST /api/upload/complete` | JSON `{id, expiry_hours, max_downloads}` | seals the share, returns `{id, code, url}` — code shown once |
-| `GET /s/<id>` | verify/download page | |
-| `POST /api/download` | JSON `{id, code}` | file bytes or `403` JSON, kept for compat |
-| `GET /api/download?id=<id>&code=<code>` | resumable bytes, honors `Range`, or `403` JSON |
-| `GET /api/info/<id>` | `{filename, size, expires_at, downloads_left, status}` — never leaks the code | |
-| `POST /api/delete` | JSON `{id, code}` | owner deletion |
+Public, tunneled:
 
-## Security model
+- `GET /s/<id>` the friend page
+- `POST /s/<id>/unlock` the code form
+- `GET /s/<id>/f/<n>` the bytes, honors Range
 
-- Code is a `secrets`-generated 6-digit number (100000–999999), never stored.
-  Stored as `sha256(salt + code)` with a per-share `hex16` salt, compared with
-  `hmac.compare_digest`.
-- 5 wrong codes &rarr; share is `LOCKED` (via `resolve_status()`).
-- Filenames sanitized with `werkzeug.secure_filename`; stored as `<id><ext>`
-  in `uploads/` (outside any static route). No directory listing, no
-  unauthenticated file access — bytes only leave via `/api/download` after a
-  correct code.
-- 10 GB default upload cap (`TS_MAX_BYTES`); every request body stays under
-  Cloudflare's 100 MB limit.
-- Expired shares are purged on every request (file bytes deleted, row kept as
-  `EXPIRED` so clients get a clear status instead of a bare 404).
-- Abandoned uploads purge themselves after 6 hours (`UPLOAD_TTL_SECONDS`).
-- Binds `127.0.0.1` only — the only ingress is the Cloudflare tunnel.
+Admin, loopback only, needs `X-TS-Token`:
 
-## Limits (MVP)
+- `GET /api/status`
+- `POST /api/shares` with `{paths, hours, note, pin}`
+- `GET /api/shares`
+- `DELETE /api/shares/<id>`
+- `POST /api/tunnel/restart`
 
-- SQLite + local disk; single process, no rate limiting yet.
-- No TLS locally (tunnel provides HTTPS).
-- No owner-auth beyond the code; anyone with link + code can download/delete.
-
-## Stable link
-
-A quick tunnel URL changes on every restart, so a link built from it dies.
-The stable link points at the Workers host instead. The worker holds the live
-tunnel URL in KV, and `/s/<id>` redirects to it. The link a sender hands out
-therefore survives a restart.
-
-One-time setup:
+## Tests
 
 ```bash
-cd workers-site
-wrangler kv namespace create TUNNEL_KV     # paste the printed id into wrangler.toml
-wrangler secret put PUBLISH_TOKEN < ../.publish-token   # created by setup.sh
-wrangler deploy
+bash tests/test_api.sh       # real HTTP against a temp data dir
+bash tests/test_tunnel.sh    # one real quick tunnel fetch
 ```
 
-After that, `./setup.sh --run` publishes the live tunnel URL on every start
-and prints the stable link. `TS_STABLE_HOST` and `TS_PUBLISH_ENDPOINT`
-override the defaults. Without the worker, the app falls back to the tunnel
-URL, and everything else still works.
+`tests/test_api.sh` covers byte-identical downloads, Range, folder indexing,
+admin auth, the public port boundary, the PIN flow, lockout, revoke, expiry, and
+dotfile exclusion.
 
-The worker has its own check: `node workers-site/test_worker.mjs`.
+## Security
 
-## Roadmap
+- Share ids are 128 bits. The link is the capability. A code is optional.
+- Codes are stored as PBKDF2-HMAC-SHA256 with 210k rounds and a per-share salt,
+  compared in constant time. Eight wrong tries lock the share for ten minutes.
+- Admin routes live on a separate loopback port behind a 0600 token. The tunnel
+  points only at the public port, so it cannot reach them.
+- Folders are indexed once. Symlinks that leave the folder and dot entries are
+  skipped. A download request carries an index, never a path.
+- Expiry deletes rows only. The sender's files are never touched.
 
-- Per-IP rate limiting + CAPTCHA on verify page.
-- Virus scanning hook.
-- Postgres option, multi-worker safe locking.
-- Burn-after-reading mode (max_downloads=1 default option in UI).
+## Limits
+
+- The sender's machine must stay awake and online while a friend downloads.
+- A quick tunnel URL changes on restart, so old links stop working. Use a named
+  tunnel when a link must survive a restart.
+- Cloudflare's free plan caps a request body at 100 MB. Response bodies have no
+  enforced limit, so downloads of any size work. Files are served from local
+  disk, not uploaded through the edge.
+- The free zone terms require a paid service for large media. Personal sharing
+  is fine. Do not publish this as a public file service on a free zone.

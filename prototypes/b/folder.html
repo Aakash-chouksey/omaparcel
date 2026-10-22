@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Riverside, October — TunnelShare</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page">
+  <aside class="rail" aria-label="Share details">
+    <p class="spine"><span>TUNNELSHARE</span><span class="share">/ 7KQ2M4</span></p>
+    <div class="gauge" data-gauge data-start="2026-10-21T11:35" data-end="2026-10-23T11:35">
+      <p class="label">Expiry</p>
+      <div class="track" style="--t:52%"><span class="tick"></span></div>
+      <p class="expiry"><time datetime="2026-10-23T11:35" data-expiry>23 Oct, 11:35</time></p>
+    </div>
+    <p class="count"><span class="num" aria-hidden="true">05</span><span class="unit">files · 486 MB</span></p>
+  </aside>
+
+  <main class="stage">
+    <div class="topline">
+      <p class="label">Manifest</p>
+      <button type="button" class="copy" data-copy="https://tunnelshare.dev/7kq2m4">Copy link</button>
+    </div>
+
+    <h1>Riverside, October</h1>
+    <p class="sub">5 files / 486 MB / expires in 23 hours</p>
+
+    <ol class="manifest" id="files">
+      <li class="head" aria-hidden="true">
+        <span>No.</span><span>Item</span><span>Size</span><span></span>
+      </li>
+      <li class="row" style="--i:0">
+        <a class="file" href="#">
+          <span class="idx">01</span>
+          <span class="name"><span class="fn">drone-pass.mp4</span><span class="type">MP4</span></span>
+          <span class="cell"><span class="size">412.6 MB</span><span class="dl">Download&nbsp;→</span></span>
+          <span class="chev" aria-hidden="true"></span>
+        </a>
+      </li>
+      <li class="row" style="--i:1">
+        <a class="file" href="#">
+          <span class="idx">02</span>
+          <span class="name"><span class="fn">IMG_2041.HEIC</span><span class="type">HEIC</span></span>
+          <span class="cell"><span class="size">24.8 MB</span><span class="dl">Download&nbsp;→</span></span>
+          <span class="chev" aria-hidden="true"></span>
+        </a>
+      </li>
+      <li class="row" style="--i:2">
+        <a class="file" href="#">
+          <span class="idx">03</span>
+          <span class="name"><span class="fn">IMG_2042.HEIC</span><span class="type">HEIC</span></span>
+          <span class="cell"><span class="size">25.1 MB</span><span class="dl">Download&nbsp;→</span></span>
+          <span class="chev" aria-hidden="true"></span>
+        </a>
+      </li>
+      <li class="row" style="--i:3">
+        <a class="file" href="#">
+          <span class="idx">04</span>
+          <span class="name"><span class="fn">locations.pdf</span><span class="type">PDF</span></span>
+          <span class="cell"><span class="size">1.2 MB</span><span class="dl">Download&nbsp;→</span></span>
+          <span class="chev" aria-hidden="true"></span>
+        </a>
+      </li>
+      <li class="row" style="--i:4">
+        <a class="file" href="#">
+          <span class="idx">05</span>
+          <span class="name"><span class="fn">packing-list.md</span><span class="type">MD</span></span>
+          <span class="cell"><span class="size">3 KB</span><span class="dl">Download&nbsp;→</span></span>
+          <span class="chev" aria-hidden="true"></span>
+        </a>
+      </li>
+    </ol>
+
+    <footer class="foot">Served from the sender's laptop. If the link stops working, ask for a new one.</footer>
+  </main>
+</div>
+
+<nav class="devbar" data-dev aria-label="Prototype states">
+  <a href="folder.html" aria-current="page">Folder</a><a href="single.html">Single</a><a href="pin.html">Pin</a><a href="expired.html">Expired</a>
+</nav>
+
+<script>
+(function () {
+  var time = document.querySelector("[data-expiry]");
+  var gauge = document.querySelector("[data-gauge]");
+  var track = document.querySelector(".track");
+  var MIN = 60000;
+
+  function tick() {
+    var now = Date.now();
+    var end = Date.parse(gauge.getAttribute("data-end"));
+    var left = end - now;
+    if (left <= 0) {
+      gauge.classList.add("is-dead");
+      gauge.classList.remove("is-soon");
+      time.textContent = "expired";
+      return;
+    }
+    time.textContent =
+      left < 60 * MIN
+        ? "in " + Math.max(1, Math.round(left / MIN)) + " min"
+        : "in " + Math.round(left / (60 * MIN)) + " hours";
+    gauge.classList.toggle("is-soon", left < 60 * MIN);
+    var start = Date.parse(gauge.getAttribute("data-start"));
+    var p = ((now - start) / (end - start)) * 100;
+    track.style.setProperty("--t", Math.min(100, Math.max(0, p)).toFixed(3) + "%");
+  }
+
+  tick();
+  setInterval(tick, MIN);
+
+  var copy = document.querySelector("[data-copy]");
+  copy.addEventListener("click", function () {
+    var url = copy.getAttribute("data-copy");
+    function done() {
+      copy.textContent = "Copied";
+      setTimeout(function () {
+        copy.textContent = "Copy link";
+      }, 1600);
+    }
+    function fallback() {
+      var field = document.createElement("textarea");
+      field.value = url;
+      field.setAttribute("readonly", "");
+      field.style.position = "fixed";
+      field.style.top = "-1000px";
+      document.body.appendChild(field);
+      field.select();
+      var ok = false;
+      try {
+        ok = document.execCommand("copy");
+      } catch (e) {}
+      field.remove();
+      copy.textContent = ok ? "Copied" : "Copy failed";
+      if (ok) {
+        setTimeout(function () {
+          copy.textContent = "Copy link";
+        }, 1600);
+      }
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(done, fallback);
+    } else {
+      fallback();
+    }
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block content %}
+<main class="sheet" data-expires="{{ expires_ts }}">
+  <header class="docket">
+    <p class="eyebrow">TunnelShare <span class="sep">/</span> <span class="code">{{ code }}</span></p>
+    <button class="copy" type="button" data-copy="{{ request.url }}">
+      <span class="t" aria-live="polite">Copy link</span>
+    </button>
+  </header>
+
+  <h1 class="note">{{ heading }}</h1>
+  <p class="sub">{{ count }} file{{ '' if count == 1 else 's' }} <span class="sep">/</span> {{ total }} <span class="sep">/</span> expires <span class="rel" data-exp>{{ expires_in }}</span></p>
+
+  {% if single %}
+  <a class="ticket" href="{{ files[0].href }}">
+    <span class="ticket-k">one file</span>
+    <span class="ticket-name">{{ files[0].rel }}</span>
+    <span class="ticket-meta">{{ files[0].type }} <span class="sep">/</span> {{ files[0].size }}</span>
+    <span class="ticket-get">Download <span aria-hidden="true">&rarr;</span></span>
+  </a>
+  {% else %}
+  <table class="manifest">
+    <thead>
+      <tr><th scope="col">item</th><th scope="col">type</th><th scope="col">size</th></tr>
+    </thead>
+    <tbody>
+      {% for f in files %}
+      <tr class="row">
+        <th scope="row" class="item"><a href="{{ f.href }}">{{ f.rel }}</a></th>
+        <td class="type">{{ f.type }}</td>
+        <td class="size"><span class="swap"><span class="bytes">{{ f.size }}</span><span class="get">Download <span aria-hidden="true">&rarr;</span></span></span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
+  <div class="total">
+    <p class="sum"><span class="k">total</span> {{ total }}</p>
+    <p class="stamp"><span>expires</span><span>{{ expires_stamp }}</span></p>
+  </div>
+
+  <p class="foot"><span>Served from the sender's laptop. If the link stops working, ask for a new one.</span></p>
+</main>
+{% endblock %}
