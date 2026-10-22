@@ -8,10 +8,10 @@ downloads. Nothing is uploaded to a third party, and every link expires.
 
 | Omarchy panel | Friend page |
 | --- | --- |
-| <img src="omarchy-plugin/screenshots/panel.png" width="420" alt="TunnelShare panel"> | <img src="docs/screenshots/friend.png" width="250" alt="Friend page"> |
+| <img src="omarchy-plugin/screenshots/panel.png" width="420" alt="Omatunnel panel"> | <img src="docs/screenshots/friend.png" width="250" alt="Friend page"> |
 
 One daemon, two front ends. `tsd` serves the friend page, owns the database, and
-supervises the Cloudflare tunnel. `tsctl` shares from the terminal. The Omarchy
+supervises the Cloudflare tunnel. `tsctl` shares from the terminal. The Omatunnel
 panel is a thin client over `tsctl`.
 
 ## Quick start on Omarchy
@@ -23,7 +23,7 @@ cd tunnelshare
 omarchy restart shell
 ```
 
-Open the TunnelShare panel from the bar. Toggle Sharing, pick a file or folder,
+Open the Omatunnel panel from the bar. Toggle Sharing, pick a file or folder,
 and copy the link. The installer prints the live URL when the tunnel connects.
 The code, if you set one, appears separately so you can send it in a second
 message.
@@ -80,7 +80,7 @@ tsctl revoke <id>
 The daemon reads files in place. It never copies, moves, or deletes them. A
 folder is indexed once, so the page lists each file with its relative path.
 
-On Omarchy, the panel does the same. It reads the real state, offers
+On Omarchy, Omatunnel does the same. It reads the real state, offers
 `Share files` and `Share folder`, an optional code, hours, a note, QR, copy,
 revoke, and download progress.
 
@@ -201,21 +201,23 @@ rm -rf ~/.local/share/tunnelshare ~/.config/tunnelshare
 This removes the app, the database, and the config. Your shared files are not
 touched.
 
-## Omarchy marketplace
+## Omatunnel marketplace
 
 The repo root is a valid Omarchy plugin source. Install the daemon first, then
-add the plugin:
+add Omatunnel:
 
 ```bash
 omarchy plugin add https://github.com/Aakash-chouksey/tunnelshare.git
 ```
 
-The plugin alone shows `tsctl is not on PATH` until the daemon is installed. The
+Omatunnel alone shows `tsctl is not on PATH` until the daemon is installed. The
 submission body and checklist are in
 [docs/omarchy-submission.md](docs/omarchy-submission.md).
 
-The landing page is in `site/`. Serve it with
-`python3 -m http.server -d site`.
+The product site is in `site/`: one static page with an animated tunnel hero,
+an interactive console demo, four use cases, the yearly cost comparison, install
+commands, and limits. Serve it with `python3 -m http.server -d site` and open
+http://localhost:8000. There is no build step.
 
 ## License
 

@@ -201,15 +201,15 @@ The friend page says the link is not available
 The code is locked out
 : Eight wrong codes lock the share for ten minutes. Revoke it and share again.
 
-The panel says `tsctl is not on PATH`
-: Install the daemon first: `./install.sh --enable`. The plugin is only the
+The Omatunnel panel says `tsctl is not on PATH`
+: Install the daemon first: `./install.sh --enable`. Omatunnel is only the
   front end.
 
 ## Security notes
 
 - The public port is the only port the tunnel can reach. The admin port is
   loopback only and needs the token.
-- The plugin runs unsandboxed inside the Omarchy shell. Review the QML before
+- Omatunnel runs unsandboxed inside the Omarchy shell. Review the QML before
   enabling it. The marketplace is not a security audit.
 - Keep `~/.config/tunnelshare/admin-token` private.
 - Use a pinned short expiry and a code for sensitive files.

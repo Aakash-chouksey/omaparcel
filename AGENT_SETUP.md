@@ -25,7 +25,7 @@ Steps:
 5. Verify a real transfer. Create a 1 MB test file, run:
    tsctl share <file> --hours 1 --note "install test" --json
    curl the returned URL with /f/0, compare the bytes with cmp, then tsctl revoke the id. Leave no test share behind.
-6. If Omarchy is present: run omarchy restart shell, then omarchy-shell codejack.tunnelshare open. Confirm the panel opens.
+6. If Omarchy is present: run omarchy restart shell, then omarchy-shell codejack.tunnelshare open. Confirm the Omatunnel panel opens.
 7. Report the public URL, whether the service is enabled, whether cloudflared and the optional tools (qrencode, wl-copy) are present, and the exact next command to share a file.
 ```
 

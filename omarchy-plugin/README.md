@@ -1,10 +1,10 @@
-# TunnelShare for Omarchy
+# Omatunnel for Omarchy
 
-A bar widget and panel that share files and folders through the TunnelShare
-daemon. Every link expires on its own, and an optional 4 to 8 digit code gates
-each one.
+Omatunnel is the Omarchy bar panel for TunnelShare. It shares files and folders
+through the TunnelShare daemon. Every link expires, and an optional 4 to 8 digit
+code gates it.
 
-The panel is a thin client. It never speaks HTTP or SQL: every read and every
+Omatunnel is a thin client. It never speaks HTTP or SQL: every read and every
 action goes through `tsctl`, so the daemon stays the only writer.
 
 ## Install
@@ -84,7 +84,7 @@ shell string, so spaces survive.
 
 ## The panel
 
-1. A `TUNNELSHARE` eyebrow, `Sharing` with the toggle, then one status line
+1. An `OMATUNNEL` eyebrow, `Sharing` with the toggle, then one status line
    with a signal dot: `LIVE · host`, `TUNNEL · CONNECTING`, `DOWN · ...`, or
    `DAEMON · DOWN` with `Start sharing`.
 2. `Share files` as the filled button, `Share folder` beside it. Both show a
@@ -106,7 +106,7 @@ the tunnel starts, accent when live, urgent on a tunnel error.
 
 ## Screenshot
 
-![TunnelShare panel](screenshots/panel.png)
+![Omatunnel panel](screenshots/panel.png)
 
 ## Limits
 

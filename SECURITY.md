@@ -30,7 +30,7 @@ what an attacker gains.
   sender's files.
 - Download progress is in memory and stores no client identity.
 - No telemetry, analytics, or third-party storage. The only peer is Cloudflare.
-- The Omarchy plugin runs unsandboxed inside the shell. It calls `tsctl`; it does
+- Omatunnel runs unsandboxed inside the shell. It calls `tsctl`; it does
   not speak HTTP or SQL. Review the QML before enabling it. The marketplace is
   not a security audit.
 

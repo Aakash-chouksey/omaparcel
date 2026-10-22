@@ -141,7 +141,7 @@ if [[ $ENABLE -eq 1 ]]; then
   step "enabled and started tunnelshare"
   if [[ -d "$PLUGIN_LINK" ]] && command -v omarchy >/dev/null 2>&1; then
     omarchy plugin enable codejack.tunnelshare || step "warning: omarchy plugin enable failed"
-    step "reload the shell to show the panel: omarchy restart shell"
+    step "reload the shell to show the Omatunnel panel: omarchy restart shell"
   fi
   URL=""
   for _ in $(seq 1 30); do

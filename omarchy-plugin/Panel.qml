@@ -121,14 +121,14 @@ Panel {
   }
 
   function tooltipText() {
-    if (tsctlMissing) return "TunnelShare · tsctl missing"
-    if (daemonDown) return "TunnelShare · daemon down"
-    if (statusData === null) return "TunnelShare"
-    if (tunnelState === "up") return "TunnelShare · live at " + publicHost() + (tunnelError !== "" ? " (unverified)" : "")
-    if (tunnelState === "starting") return "TunnelShare · starting"
-    if (cloudflaredMissing) return "TunnelShare · cloudflared missing"
-    if (tunnelError !== "") return "TunnelShare · " + tunnelError
-    return "TunnelShare · tunnel down"
+    if (tsctlMissing) return "Omatunnel · tsctl missing"
+    if (daemonDown) return "Omatunnel · daemon down"
+    if (statusData === null) return "Omatunnel"
+    if (tunnelState === "up") return "Omatunnel · live at " + publicHost() + (tunnelError !== "" ? " (unverified)" : "")
+    if (tunnelState === "starting") return "Omatunnel · starting"
+    if (cloudflaredMissing) return "Omatunnel · cloudflared missing"
+    if (tunnelError !== "") return "Omatunnel · " + tunnelError
+    return "Omatunnel · tunnel down"
   }
 
   function copyText(text, field) {
@@ -579,7 +579,7 @@ Panel {
 
             Text {
               textFormat: Text.PlainText
-              text: "TUNNELSHARE"
+              text: "OMATUNNEL"
               color: root.dim
               font.family: root.fontFamily
               font.pixelSize: Style.font.caption

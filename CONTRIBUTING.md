@@ -12,7 +12,7 @@ The daemon starts on `127.0.0.1:8080` (public) and `127.0.0.1:8081` (admin). The
 admin token is written to `~/.config/tunnelshare/admin-token` on first start.
 
 The web page is server rendered. JavaScript is progressive enhancement only.
-The panel is QML over `tsctl`; it never speaks HTTP or SQL.
+Omatunnel is QML over `tsctl`; it never speaks HTTP or SQL.
 
 ## Tests
 
@@ -25,7 +25,7 @@ bash tests/test_tunnel.sh   # needs cloudflared and network
 The first two use ports `18080` to `18085` and temporary data dirs. The tunnel
 test starts a real quick tunnel and cleans up after itself.
 
-For the plugin:
+For Omatunnel:
 
 ```bash
 omarchy plugin validate omarchy-plugin

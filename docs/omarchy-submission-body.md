@@ -16,7 +16,7 @@ _No response_
 
 ### Maintainer notes
 
-The plugin is a thin client over the TunnelShare daemon and `tsctl`. Install the daemon first with `./install.sh --enable`; the panel shows `tsctl is not on PATH` until then. The repo root manifest points at `omarchy-plugin/BarWidget.qml`. Quick tunnels need no account; named tunnels need a Cloudflare domain.
+Omatunnel is a thin client over the TunnelShare daemon and `tsctl`. Install the daemon first with `./install.sh --enable`; the panel shows `tsctl is not on PATH` until then. The repo root manifest points at `omarchy-plugin/BarWidget.qml`. Quick tunnels need no account; named tunnels need a Cloudflare domain.
 
 ### Submission checklist
 

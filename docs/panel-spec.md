@@ -1,13 +1,13 @@
-# Omarchy panel spec v1
+# Omatunnel panel spec v1
 
-The panel is the sender UI. It never speaks HTTP or SQLite directly. Every
+Omatunnel is the sender UI. It never speaks HTTP or SQLite directly. Every
 action goes through `tsctl`, so the daemon stays the only writer.
 
 ## Plugin files
 
 ```
 omarchy-plugin/
-  manifest.json      id codejack.tunnelshare, kinds ["bar-widget"]
+  manifest.json      id codejack.tunnelshare, name Omatunnel, kinds ["bar-widget"]
   BarWidget.qml      bar icon, state color, opens the panel
   Panel.qml          the whole flow
   ShareRow.qml       one active link row

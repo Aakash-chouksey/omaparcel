@@ -1,6 +1,6 @@
 # Omarchy marketplace submission
 
-This is the exact path to list TunnelShare at
+This is the exact path to list Omatunnel at
 [plugins.omarchy.org](https://plugins.omarchy.org/). The submission is prepared
 but not submitted.
 
@@ -11,9 +11,10 @@ but not submitted.
 - The root `README.md` has installation and removal instructions.
 - The root `LICENSE` is MIT.
 - The root `preview.png` is the panel screenshot. The marketplace optimizes it.
-- The plugin ID is `codejack.tunnelshare`. It is outside the reserved
-  `omarchy.*` namespace and is the ID used by the local install.
-- The plugin needs the TunnelShare daemon and `tsctl`. This is in the manifest
+- The display name is `Omatunnel`. The permanent plugin ID is
+  `codejack.tunnelshare`. It is outside the reserved `omarchy.*` namespace and
+  is the ID used by the local install.
+- Omatunnel needs the TunnelShare daemon and `tsctl`. This is in the manifest
   description, the README, and the maintainer notes.
 
 ## Category and tags
@@ -30,7 +31,7 @@ checklist item, then create the issue:
 ```bash
 gh issue create \
   --repo omacom/omarchy-plugin-marketplace \
-  --title "[Plugin]: TunnelShare" \
+  --title "[Plugin]: Omatunnel" \
   --body-file docs/omarchy-submission-body.md
 ```
 
@@ -46,4 +47,4 @@ commit is final.
   the repo URL, and the full 40-character commit SHA.
 - The marketplace clones mutable upstream HEAD. Users must inspect the installed
   commit before enabling.
-- The plugin runs unsandboxed. The marketplace listing is not a security audit.
+- Omatunnel runs unsandboxed. The marketplace listing is not a security audit.

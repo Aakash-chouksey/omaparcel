@@ -55,7 +55,7 @@ BarWidget {
 
   function tooltipText() {
     if (panelItem && panelItem.tooltipText) return panelItem.tooltipText()
-    return "TunnelShare"
+    return "Omatunnel"
   }
 
   implicitWidth: button.implicitWidth
