@@ -585,6 +585,7 @@ class Tunnel:
                     # Advisory only. A local probe can miss while the edge is
                     # still propagating, and the link already works elsewhere.
                     self.verified = False
+                    self.error = "local health check failed"
             for _ in range(15):
                 if self._stop.is_set() or self.url != url:
                     return

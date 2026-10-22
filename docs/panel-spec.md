@@ -40,9 +40,10 @@ action, run again.
 `daemon_down`, not as a parse error. Show the toggle as off and a "Start
 sharing" action.
 
-Do not offer a copyable link while `public_base` is empty. `state: starting`
-with a URL means the tunnel is still connecting. Show `Starting the tunnel`.
-Only `state: up` with `verified: true` is a link that works.
+Do not offer a copyable link while `public_base` is empty. `state: up` means
+`cloudflared` registered the tunnel. `verified: true` means the local probe got
+a 200. When `verified` is false, keep the link and show `(checking)` until the
+error appears, then `(unverified)`. Never hide a registered link.
 
 ## Actions
 

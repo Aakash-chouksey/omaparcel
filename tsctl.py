@@ -117,6 +117,8 @@ def tunnel_lines(tunnel):
     lines = [f"tunnel   {tunnel.get('state', '?')} ({tunnel.get('mode', '?')})"]
     lines.append(f"url      {tunnel.get('url') or '-'}")
     lines.append(f"restarts {tunnel.get('restarts', 0)}")
+    if tunnel.get("verified") is False:
+        lines.append("probe    unverified")
     if tunnel.get("error"):
         lines.append(f"error    {tunnel['error']}")
     return lines

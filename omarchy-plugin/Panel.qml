@@ -99,7 +99,7 @@ Panel {
     if (cloudflaredMissing) return "cloudflared is not installed"
     if (tunnelState === "up") {
       var checked = statusData && statusData.tunnel ? statusData.tunnel.verified !== false : true
-      return "Live at " + publicHost() + (checked ? "" : " (checking)")
+      return "Live at " + publicHost() + (checked ? "" : (tunnelError !== "" ? " (unverified)" : " (checking)"))
     }
     if (tunnelState === "starting") return "Starting the tunnel"
     if (tunnelState === "disabled") return "Tunnel disabled"
@@ -108,7 +108,7 @@ Panel {
   }
 
   function statusColor() {
-    if (tunnelState === "up" && !daemonDown) return accent
+    if (tunnelState === "up" && !daemonDown) return tunnelError !== "" ? urgent : accent
     if (cloudflaredMissing || tunnelError !== "") return urgent
     return dim
   }
@@ -124,7 +124,7 @@ Panel {
     if (tsctlMissing) return "TunnelShare · tsctl missing"
     if (daemonDown) return "TunnelShare · daemon down"
     if (statusData === null) return "TunnelShare"
-    if (tunnelState === "up") return "TunnelShare · live at " + publicHost()
+    if (tunnelState === "up") return "TunnelShare · live at " + publicHost() + (tunnelError !== "" ? " (unverified)" : "")
     if (tunnelState === "starting") return "TunnelShare · starting"
     if (cloudflaredMissing) return "TunnelShare · cloudflared missing"
     if (tunnelError !== "") return "TunnelShare · " + tunnelError

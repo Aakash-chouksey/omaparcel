@@ -52,7 +52,9 @@ Quick tunnels use HTTP/2 by default (`tunnel.transport`). QUIC stalls on some
 VPNs and Tailscale networks. The daemon probes the public URL against
 `/healthz` and reports `verified`. The probe is advisory. A local probe can miss
 while Cloudflare propagates a new hostname, and the link still works elsewhere.
-The tunnel is up as soon as `cloudflared` registers it.
+The tunnel is up as soon as `cloudflared` registers it. If the probe keeps
+failing, `verified` goes false and the status carries
+`local health check failed`, but the link stays visible.
 
 ## API
 

@@ -139,11 +139,12 @@ down.
   log lines in a ring buffer. Expose `state` as `starting`, `up`, `down`, or
   `disabled`.
 - On SIGTERM or SIGINT, terminate the child, then stop the servers.
-- `state` stays `starting` until `<url>/healthz` answers 200 from this machine.
-  `public_base` stays empty until then. `verified` is true only after that
-  check. Six failed checks before the first success, or three after a success,
-  move the state to `down` with an error. The check keeps running and can
-  recover without restarting `cloudflared`.
+- `state` becomes `up` as soon as `cloudflared` registers the tunnel. The link
+  is not hidden while the probe runs. `verified` is true after a local
+  `<url>/healthz` request answers 200. Six failed probes before the first
+  success, or three after it, set `verified` to false and an advisory `error`.
+  The state and URL stay, because a local probe can miss while the edge
+  propagates. The probe keeps running and clears the error on recovery.
 - `tsctl tunnel restart` kills and restarts the child.
 - Missing binary is `state: "down"`, `error: "cloudflared not found"`.
 
