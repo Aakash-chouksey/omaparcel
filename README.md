@@ -72,6 +72,13 @@ Admin, loopback only, needs `X-TS-Token`:
 - `DELETE /api/shares/<id>`
 - `POST /api/tunnel/restart`
 
+## Website
+
+`site/` holds the landing page: static HTML, one stylesheet, one small script.
+Serve it with `python3 -m http.server -d site` and open http://localhost:8000.
+The comparison dock works without a build step and the page degrades to a
+static price table without JavaScript.
+
 ## Tests
 
 ```bash
