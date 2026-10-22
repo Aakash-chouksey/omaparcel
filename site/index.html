@@ -1,280 +1,486 @@
 <!doctype html>
-<html lang="en" class="site" data-plan="tunnelshare">
+<html lang="en" class="no-js">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="dark">
-<title>TunnelShare: a tunnel for one folder</title>
-<meta name="description" content="Share a file or folder from your own disk through a Cloudflare tunnel. The bytes cross once, nothing waits in storage, and every link expires.">
-<meta property="og:title" content="TunnelShare: a tunnel for one folder">
-<meta property="og:description" content="Send the link. Keep the file. A Cloudflare tunnel that serves a folder from your own disk.">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#0a121c">
+<title>TunnelShare — a tunnel for one folder</title>
+<meta name="description" content="Share a file or folder straight from your own disk through a Cloudflare tunnel. One link, no upload, nothing stored, and every link expires.">
+<meta property="og:title" content="TunnelShare — a tunnel for one folder">
+<meta property="og:description" content="A tunnel from your disk to their browser. No upload, no storage bill, and every link expires.">
 <meta property="og:type" content="website">
-<link rel="icon" href="data:,">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a121c'/%3E%3Cellipse cx='32' cy='32' rx='23' ry='9.5' fill='none' stroke='%23e8a06a' stroke-opacity='.38'/%3E%3Cellipse cx='32' cy='32' rx='15' ry='6' fill='none' stroke='%23e8a06a' stroke-opacity='.62'/%3E%3Cellipse cx='32' cy='32' rx='7' ry='3' fill='none' stroke='%23ffd9b8' stroke-opacity='.9'/%3E%3Ccircle cx='32' cy='32' r='2.6' fill='%23fff6e9'/%3E%3C/svg%3E">
+<link rel="preload" href="fonts/clash-grotesk-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/satoshi-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="landing.css">
-<script>document.documentElement.classList.add("js");</script>
+<script>document.documentElement.classList.replace("no-js", "js");</script>
 </head>
 <body>
+
 <a class="skip" href="#main">Skip to content</a>
 
-<header class="hero" id="top">
-  <canvas class="tunnel" data-tunnel aria-hidden="true"></canvas>
-  <div class="hero-shade" aria-hidden="true"></div>
+<header class="site-header" data-header>
+  <div class="nav-wrap">
+    <a class="wordmark" href="#top" aria-label="TunnelShare home">TunnelShare</a>
 
-  <nav class="nav" aria-label="Primary">
-    <a class="brand" href="#top">TunnelShare</a>
-    <div class="nav-links">
-      <a href="#numbers">Pricing</a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#product">Product</a>
+      <a href="#use-cases">Use cases</a>
+      <a href="#costs">Costs</a>
       <a href="#how">How it works</a>
       <a href="#limits">Limits</a>
-      <a href="https://github.com/Aakash-chouksey/tunnelshare" rel="noopener">GitHub</a>
-      <a class="nav-cta" href="#install">Install</a>
-    </div>
-  </nav>
+    </nav>
 
-  <div class="hero-copy">
-    <p class="eyebrow"><span class="dot"></span> <span class="eyebrow-text">A wormhole through Cloudflare, for one folder</span></p>
-    <h1>Send the link.<br>Keep the file.</h1>
-    <p class="lede">TunnelShare opens a tunnel from your disk to your friend's browser. The bytes cross once. Nothing waits in storage, and every link expires.</p>
-    <div class="actions">
-      <a class="btn" href="#install">Install TunnelShare</a>
-      <a class="text-link" href="https://github.com/Aakash-chouksey/tunnelshare#readme" rel="noopener">Read the README</a>
+    <div class="nav-actions">
+      <a class="nav-gh" href="https://github.com/Aakash-chouksey/tunnelshare" rel="noopener">GitHub <span aria-hidden="true">↗</span></a>
+      <a class="pill pill--nav" href="#install">Install</a>
+      <button class="menu-btn" type="button" data-menu aria-expanded="false" aria-controls="mobile-menu">
+        <span class="menu-bars" aria-hidden="true"><i></i><i></i></span>
+        <span class="sr-only">Open menu</span>
+      </button>
     </div>
-    <ul class="facts">
-      <li>No account</li>
-      <li>No upload</li>
-      <li>No storage bill</li>
-    </ul>
   </div>
 
-  <p class="route-chip"><span class="dot"></span><span class="chip-text">No tolls on this route</span></p>
-  <a class="scroll-cue" href="#numbers"><span>Compare the crossings</span><span class="rule"></span></a>
+  <div class="mobile-menu" id="mobile-menu" data-mobile-menu hidden>
+    <nav aria-label="Mobile">
+      <a href="#product">Product</a>
+      <a href="#use-cases">Use cases</a>
+      <a href="#costs">Costs</a>
+      <a href="#how">How it works</a>
+      <a href="#install">Install</a>
+      <a href="#limits">Limits</a>
+      <a href="https://github.com/Aakash-chouksey/tunnelshare" rel="noopener">GitHub ↗</a>
+    </nav>
+    <a class="pill pill--nav mobile-install" href="#install">Install TunnelShare</a>
+  </div>
 </header>
 
 <main id="main">
-  <section class="crossing" id="numbers">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="eyebrow">The crossing</p>
-        <h2>What a year of sharing costs.</h2>
-        <p class="section-lede">A 40 GB folder, once a week, for a year. Prices are the cheapest plan that lets you share, as listed by each vendor in October 2026.</p>
+
+  <!-- ============ hero ============ -->
+  <section class="hero" id="top">
+    <canvas class="hero-canvas" data-tunnel aria-hidden="true"></canvas>
+    <div class="hero-grade" aria-hidden="true"></div>
+    <div class="hero-grain" aria-hidden="true"></div>
+
+    <div class="hero-content">
+      <p class="hero-kicker"><span>TunnelShare</span> Free to use.</p>
+      <h1>Send the link.<br>Keep the file.</h1>
+      <p class="hero-prompts">“Share this folder.” “Send 40 GB without uploading.” “Lock it with a code.”</p>
+      <p class="hero-sub">One folder stays where it is. TunnelShare opens a private link, streams the bytes from your machine, and closes the door when the link expires.</p>
+      <div class="hero-actions">
+        <a class="pill pill--light" href="#install">Install TunnelShare <span class="arr" aria-hidden="true">↓</span></a>
+        <a class="play-link" href="#product">See how it works <span class="arr" aria-hidden="true">↓</span></a>
       </div>
+    </div>
 
-      <div class="console">
-        <fieldset class="routes">
-          <legend class="sr-only">Compare TunnelShare with another service</legend>
-
-          <label class="route">
-            <input type="radio" name="plan" value="tunnelshare" checked>
-            <span class="route-body">
-              <span class="route-name">TunnelShare</span>
-              <span class="route-price">$0</span>
-            </span>
-          </label>
-
-          <label class="route">
-            <input type="radio" name="plan" value="wetransfer">
-            <span class="route-body">
-              <span class="route-name">WeTransfer</span>
-              <span class="route-price">$144</span>
-            </span>
-          </label>
-
-          <label class="route">
-            <input type="radio" name="plan" value="ngrok">
-            <span class="route-body">
-              <span class="route-name">ngrok</span>
-              <span class="route-price">$96</span>
-            </span>
-          </label>
-
-          <label class="route">
-            <input type="radio" name="plan" value="tailscale">
-            <span class="route-body">
-              <span class="route-name">Tailscale</span>
-              <span class="route-price">$0</span>
-            </span>
-          </label>
-        </fieldset>
-
-        <div class="fare" aria-live="polite">
-          <p class="fare-figure"><span id="cost">$0</span><span class="per">a year</span></p>
-          <p class="fare-note" id="note">No transfer cap, no toll gates, no storage. The bytes never leave your disk.</p>
-          <a class="fare-src" id="src" href="#how">How it works</a>
-        </div>
-      </div>
-
-      <p class="no-js-note">The live comparison needs JavaScript. Every price is listed below.</p>
-
-      <table class="compare">
-        <caption class="sr-only">Cost to share a 40 GB folder every week for a year, by service</caption>
-        <thead>
-          <tr>
-            <th scope="col">Service</th>
-            <th scope="col">Price</th>
-            <th scope="col">What you get</th>
-            <th scope="col">Where the file waits</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr data-row="tunnelshare">
-            <th scope="row"><span class="svc">TunnelShare</span><span class="svc-note">this project</span></th>
-            <td class="price"><span class="money">$0</span><span class="per">a year</span></td>
-            <td>No per-transfer cap. Folder manifest, expiry, optional code.</td>
-            <td>Your disk</td>
-          </tr>
-          <tr data-row="wetransfer">
-            <th scope="row"><span class="svc">WeTransfer Pro</span><span class="svc-note">upload</span></th>
-            <td class="price"><span class="money">$144</span><span class="per">a year</span></td>
-            <td>200 GB per transfer. 1 TB of storage.</td>
-            <td>WeTransfer's servers</td>
-          </tr>
-          <tr data-row="ngrok">
-            <th scope="row"><span class="svc">ngrok Hobbyist</span><span class="svc-note">tunnel</span></th>
-            <td class="price"><span class="money">$96</span><span class="per">a year</span></td>
-            <td>5 GB a month included, then $0.10 per GB.</td>
-            <td>Your disk</td>
-          </tr>
-          <tr data-row="tailscale">
-            <th scope="row"><span class="svc">Tailscale Funnel</span><span class="svc-note">tunnel</span></th>
-            <td class="price"><span class="money">$0</span><span class="per">a year</span></td>
-            <td>One public HTTPS URL to a local service. The sender installs Tailscale.</td>
-            <td>Your disk</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <p class="source">List prices, October 2026:
-        <a href="https://wetransfer.com/pricing" rel="noopener">WeTransfer</a>,
-        <a href="https://ngrok.com/pricing" rel="noopener">ngrok</a>,
-        <a href="https://tailscale.com/pricing" rel="noopener">Tailscale</a>.
-        WeTransfer Pro is $12 a month, ngrok Hobbyist is $10 a month or $96 a year on annual billing, and Tailscale Personal is free. Plans change, so check the vendor before you quote this page.</p>
+    <div class="hero-foot">
+      <span class="hero-fine">A tunnel through Cloudflare · nothing stored</span>
+      <span class="hero-scroll">Scroll <span aria-hidden="true">↓</span></span>
     </div>
   </section>
 
-  <section class="section" id="how">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="eyebrow">How it works</p>
-        <h2>One link leaves the machine.</h2>
-      </div>
+  <!-- ============ product ============ -->
+  <section class="card card--product" id="product" data-reveal>
+    <p class="label"><span>Product</span><span class="label-note">One folder, one link</span></p>
 
-      <div class="steps">
-        <article class="step">
-          <span class="step-no">01</span>
-          <h3>The link is the capability</h3>
-          <p>128 random bits in the URL. Whoever holds it can read the share. Revoke it and the same URL answers 410.</p>
-        </article>
-        <article class="step">
-          <span class="step-no">02</span>
-          <h3>The bytes stream from disk</h3>
-          <p>The browser asks for ranges and the daemon answers from the original file. A 5 GB folder costs no storage because no second copy exists.</p>
-        </article>
-        <article class="step">
-          <span class="step-no">03</span>
-          <h3>The tunnel closes</h3>
-          <p>Every share carries an expiry. A 4 to 8 digit code can guard the sensitive ones. Eight wrong tries lock the share for ten minutes.</p>
-        </article>
-      </div>
+    <div class="split split--head">
+      <h2 class="h2">Share a folder<br><span class="tint-blue">without uploading it.</span></h2>
+      <p class="lede">Point TunnelShare at a folder. It starts a Cloudflare quick tunnel, prints one link, and serves the files from your disk. Recipients just open the link.</p>
     </div>
-  </section>
 
-  <section class="section" id="bill">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="eyebrow">The bill</p>
-        <h2>The invoice is short.</h2>
+    <div class="stage">
+      <div class="stage-ticker" aria-hidden="true">
+        <div class="ticker-line">No upload · No storage · One link · Revoke anytime · No upload · No storage · One link · Revoke anytime ·</div>
+        <div class="ticker-line ticker-line--rev">Built on Cloudflare Tunnel · Nothing leaves your disk · Built on Cloudflare Tunnel · Nothing leaves your disk ·</div>
       </div>
 
-      <div class="bill-grid">
-        <div class="receipt">
-          <div class="receipt-top"><span>TunnelShare</span><span>Statement / 001</span></div>
-          <dl>
-            <div><dt>cloudflared tunnel</dt><dd>included</dd></div>
-            <div><dt>object storage</dt><dd>none</dd></div>
-            <div><dt>egress</dt><dd>none</dd></div>
-            <div><dt>account</dt><dd>none</dd></div>
-            <div class="total"><dt>total</dt><dd>$0.00 <span>a year</span></dd></div>
-          </dl>
-          <p class="stamp"><span>paid</span><span>your disk</span></p>
+      <div class="console" id="console-demo">
+        <div class="console-bar">
+          <span class="console-led" aria-hidden="true"></span>
+          <span class="console-name">tsd <em>0.4</em></span>
+          <span class="console-state">online</span>
+          <span class="console-mode" data-mode-label>folder · 12 files</span>
+          <button class="console-pause" type="button" data-pause aria-pressed="false">Pause</button>
         </div>
 
-        <div class="bill-copy">
-          <p>Cloudflare's free plan carries the tunnel. Your disk carries the bytes. A quick tunnel needs no account and no domain.</p>
-          <p>A named tunnel keeps the same hostname across restarts. It needs a Cloudflare account and a domain you already own, which is the only line that can add cost.</p>
-          <p>The daemon serves downloads as fast as your upstream allows. Cloudflare's free plan caps a request body at 100 MB, and that limit applies to uploads. Downloads have no enforced cap.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+        <div class="console-body">
+          <div class="console-main">
+            <p class="cmdline"><span class="prompt" aria-hidden="true">$</span><span class="cmd" data-command>tsctl share ~/Pictures/Riverside_2026 --hours 24</span><span class="caret" aria-hidden="true"></span></p>
 
-  <section class="section" id="install">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="eyebrow">Install</p>
-        <h2>Three commands.</h2>
-        <p class="section-lede">A venv, a config file, and a systemd user unit. No sudo, no network calls except pip.</p>
-      </div>
+            <div class="linkbox">
+              <div class="linkbox-text">
+                <p class="micro">Public link</p>
+                <p class="link-url" data-link>https://tall-river-4821.trycloudflare.com/s/9f3a2c71e04b</p>
+                <p class="micro link-meta" data-meta>12 files · 3.2 GB · expires in 24 h</p>
+              </div>
+              <button class="copy" type="button" data-copy data-copied-label="Copied">Copy</button>
+            </div>
 
-      <div class="install">
-        <div class="step-row">
-          <span class="row-no">01</span>
-          <div class="row-body">
-            <p class="row-label">Clone</p>
-            <code>git clone https://github.com/Aakash-chouksey/tunnelshare.git</code>
+            <ul class="file-list" data-files>
+              <li><span class="ftype">MOV</span><span class="fname">A001_0342.MOV</span><span class="fsize">1.4 GB</span><span class="fstate">streaming</span></li>
+              <li><span class="ftype">MOV</span><span class="fname">A001_0343.MOV</span><span class="fsize">1.1 GB</span><span class="fstate">queued</span></li>
+              <li><span class="ftype">MOV</span><span class="fname">A001_0344.MOV</span><span class="fsize">620 MB</span><span class="fstate">queued</span></li>
+              <li><span class="ftype">PDF</span><span class="fname">shot_list.pdf</span><span class="fsize">1.8 MB</span><span class="fstate">ready</span></li>
+              <li class="file-more"><span>+ 8 more files</span><span>No account</span></li>
+            </ul>
+
+            <div class="progress-wrap">
+              <div class="progress-head">
+                <span data-progress-label>Serving from disk</span>
+                <span data-progress-value>1.4 GB / 3.2 GB</span>
+              </div>
+              <div class="progress" role="img" aria-label="14 percent of this share has been served"><i data-progress style="width:44%"></i></div>
+              <p class="progress-note">Ranges are served on demand. The bytes never touch a server.</p>
+            </div>
           </div>
-          <button class="row-copy" type="button" data-copy="git clone https://github.com/Aakash-chouksey/tunnelshare.git">Copy</button>
-        </div>
 
-        <div class="step-row">
-          <span class="row-no">02</span>
-          <div class="row-body">
-            <p class="row-label">Install and enable the unit</p>
-            <code>cd tunnelshare &amp;&amp; ./install.sh --enable</code>
-          </div>
-          <button class="row-copy" type="button" data-copy="cd tunnelshare &amp;&amp; ./install.sh --enable">Copy</button>
-        </div>
-
-        <div class="step-row">
-          <span class="row-no">03</span>
-          <div class="row-body">
-            <p class="row-label">Share a folder for 24 hours</p>
-            <code>tsctl share ~/Pictures/Riverside --hours 24 --note "Riverside, October"</code>
-          </div>
-          <button class="row-copy" type="button" data-copy="tsctl share ~/Pictures/Riverside --hours 24 --note &quot;Riverside, October&quot;">Copy</button>
+          <aside class="console-side">
+            <div class="qr" aria-hidden="true">
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <p class="micro qr-note">Scan to open</p>
+            <div class="pin-badge" data-pin hidden>PIN <b>4821</b></div>
+            <p class="side-note">No account. No upload. The door closes when the timer ends.</p>
+          </aside>
         </div>
       </div>
 
-      <p class="install-links">
-        <a href="https://github.com/Aakash-chouksey/tunnelshare#readme" rel="noopener">Read the README</a>
-        <span class="sep">/</span>
-        <a href="https://github.com/Aakash-chouksey/tunnelshare" rel="noopener">Source on GitHub</a>
-      </p>
+      <div class="stage-tabs">
+        <div class="tabs js-tabs" role="tablist" aria-label="Share mode">
+          <button class="tab is-active" type="button" role="tab" aria-selected="true" aria-controls="console-demo" data-mode="folder">Folder</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="console-demo" data-mode="file">One file</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="console-demo" data-mode="code">Code</button>
+        </div>
+        <p class="stage-note">Illustrative session</p>
+      </div>
     </div>
   </section>
 
-  <section class="section" id="limits">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="eyebrow">Limits</p>
-        <h2>What it will not do.</h2>
+  <!-- ============ use cases ============ -->
+  <section class="card card--use" id="use-cases" data-reveal>
+    <p class="label"><span>Use cases</span><span class="label-note">Four ways people share</span></p>
+
+    <div class="split split--head">
+      <h2 class="h2">Choose the moment.</h2>
+      <p class="lede">A client drop, a family album, a build for review, a festival master. The thing being sent changes; the path is the same.</p>
+    </div>
+
+    <div class="use">
+      <div class="tabs use-tabs js-tabs" role="tablist" aria-label="Use cases">
+        <button class="tab is-active" type="button" role="tab" aria-selected="true" aria-controls="use-panel" data-use="client">Client handoff</button>
+        <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="use-panel" data-use="family">Family</button>
+        <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="use-panel" data-use="code">Code review</button>
+        <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="use-panel" data-use="media">Big media</button>
       </div>
 
-      <div class="limits">
-        <div class="limit">
-          <h3>Work while the laptop sleeps</h3>
-          <p>The bytes live on your machine, so the machine stays awake and online while a friend downloads.</p>
+      <div class="use-grid" id="use-panel">
+        <div class="brief">
+          <p class="micro" data-brief-kicker>Client handoff · The brief</p>
+          <h3 class="brief-title" data-brief-title>Send the raw footage without a cloud round trip.</h3>
+          <blockquote data-brief-quote>“The client needs the 14 GB ProRes folder today. I’m not waiting two hours for an upload, and I’m not paying for another terabyte.”</blockquote>
+
+          <p class="micro brief-label">Starts with your files</p>
+          <ul class="source-list" data-source-list>
+            <li><span class="ftype">DIR</span><span>Riverside_2026</span><span>14.2 GB</span></li>
+            <li><span class="ftype">PDF</span><span>shot_list.pdf</span><span>1.8 MB</span></li>
+            <li><span class="ftype">TXT</span><span>delivery_note.txt</span><span>2 KB</span></li>
+          </ul>
+
+          <a class="arrow-link" href="#limits">Read the actual limits <span aria-hidden="true">→</span></a>
         </div>
-        <div class="limit">
-          <h3>Give a quick tunnel a stable name</h3>
-          <p>A quick tunnel gets a new hostname on every restart. Old links stop working. A named tunnel keeps its name.</p>
+
+        <div class="preview-wrap">
+          <div class="preview">
+            <div class="preview-bar">
+              <span class="preview-fileicon" aria-hidden="true"></span>
+              <span class="preview-path" data-preview-path>Riverside_2026</span>
+              <span class="preview-exp" data-preview-exp>Expires in 23 h</span>
+            </div>
+            <div class="preview-head">
+              <div>
+                <h4 data-preview-title>Riverside_2026</h4>
+                <p data-preview-meta>12 files · 14.2 GB</p>
+              </div>
+              <span class="pill pill--download" data-preview-download>Download all</span>
+            </div>
+            <ul class="preview-rows" data-preview-rows>
+              <li><span class="ftype">MOV</span><span class="pname">A001_C002_0714RP.mov</span><span class="psize">4.1 GB</span><span class="pdown" aria-hidden="true">↓</span></li>
+              <li><span class="ftype">MOV</span><span class="pname">A002_C008_0812RP.mov</span><span class="psize">3.6 GB</span><span class="pdown" aria-hidden="true">↓</span></li>
+              <li><span class="ftype">MOV</span><span class="pname">A003_C011_0930RP.mov</span><span class="psize">5.2 GB</span><span class="pdown" aria-hidden="true">↓</span></li>
+              <li><span class="ftype">PDF</span><span class="pname">shot_list.pdf</span><span class="psize">1.8 MB</span><span class="pdown" aria-hidden="true">↓</span></li>
+              <li><span class="ftype">TXT</span><span class="pname">delivery_note.txt</span><span class="psize">2 KB</span><span class="pdown" aria-hidden="true">↓</span></li>
+            </ul>
+            <div class="preview-foot">
+              <span data-preview-foot>Served from the sender’s disk · No account needed</span>
+              <span class="powered">TunnelShare</span>
+            </div>
+          </div>
+          <p class="preview-caption">Illustrative share page · the real one is served by <code>tsd</code></p>
         </div>
-        <div class="limit">
-          <h3>Take browser uploads above 100 MB</h3>
-          <p>Cloudflare's free plan caps the request body. The CLI never uploads, and downloads have no such cap.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ costs ============ -->
+  <section class="card card--costs" id="costs" data-reveal>
+    <p class="label"><span>The bill</span><span class="label-note">Prices checked October 2026</span></p>
+
+    <div class="split split--head">
+      <h2 class="h2">What a year costs.</h2>
+      <p class="lede">A 40 GB folder, once a week, for a year. These are the cheapest plans that let you share, listed by the vendor. TunnelShare has no storage line because it stores nothing.</p>
+    </div>
+
+    <div class="cost-grid">
+      <div class="cost-hero">
+        <div class="big">$0</div>
+        <p class="cost-cap">for the folder you already own.</p>
+        <p class="cost-sub">No storage tier, no per-GB meter, no seat. The Cloudflare free plan carries the tunnel; your disk carries the bytes.</p>
+        <ul class="stat-row">
+          <li><b>0</b><span>GB stored</span></li>
+          <li><b>1</b><span>link at a time</span></li>
+          <li><b>0</b><span>accounts to make</span></li>
+        </ul>
+        <a class="arrow-link" href="#receipt">Read the receipt <span aria-hidden="true">→</span></a>
+      </div>
+
+      <div class="meters">
+        <div class="meter-row meter-row--this meter-row--zero" style="--w:0">
+          <div class="meter-head"><span class="mname">TunnelShare</span><span class="mprice">$0</span></div>
+          <p class="mnote">Your disk · Cloudflare free plan · no meter</p>
+          <div class="meter"><i></i></div>
         </div>
-        <div class="limit">
-          <h3>Serve large media as a public service</h3>
-          <p>Cloudflare's free zone terms want a paid plan for that. Sharing with friends is fine.</p>
+        <div class="meter-row meter-row--zero" style="--w:0">
+          <div class="meter-head"><span class="mname">Tailscale Funnel</span><span class="mprice">$0</span></div>
+          <p class="mnote">Free plan · the sender installs Tailscale · no meter</p>
+          <div class="meter"><i></i></div>
+        </div>
+        <div class="meter-row" style="--w:66.7%">
+          <div class="meter-head"><span class="mname">ngrok Hobbyist</span><span class="mprice">$96</span></div>
+          <p class="mnote">5 GB a month included, then $0.10 per GB</p>
+          <div class="meter"><i></i></div>
+        </div>
+        <div class="meter-row" style="--w:100%">
+          <div class="meter-head"><span class="mname">WeTransfer Pro</span><span class="mprice">$144</span></div>
+          <p class="mnote">200 GB per transfer · 1 TB of storage</p>
+          <div class="meter"><i></i></div>
+        </div>
+        <p class="meter-foot">Yearly cost for one 40 GB folder a week. A zero-width bar is a zero bill, not a missing number.</p>
+      </div>
+    </div>
+
+    <details class="receipt" id="receipt">
+      <summary class="receipt-summary">
+        <span>Inspect the numbers</span>
+        <span class="receipt-total">Total <b>$0.00</b> <span>USD / year</span></span>
+        <span class="receipt-toggle" aria-hidden="true"></span>
+      </summary>
+      <div class="receipt-body">
+        <div class="receipt-lines">
+          <div><span>cloudflared quick tunnel</span><b>included</b></div>
+          <div><span>object storage</span><b>none</b></div>
+          <div><span>egress or requests</span><b>none</b></div>
+          <div><span>account</span><b>none</b></div>
+          <div class="receipt-last"><span>Total</span><b>$0.00</b></div>
+          <span class="stamp">paid by your disk</span>
+        </div>
+
+        <div class="table-scroll">
+          <table class="compare">
+            <thead>
+              <tr><th scope="col">Service</th><th scope="col">Price / year</th><th scope="col">What you get</th><th scope="col">Where the file waits</th></tr>
+            </thead>
+            <tbody>
+              <tr class="row-this"><td><b>TunnelShare</b><span>self-hosted</span></td><td>$0</td><td>No cap · no storage · optional code</td><td>Your disk</td></tr>
+              <tr><td><b>WeTransfer Pro</b><span>upload</span></td><td>$144</td><td>200 GB per transfer · 1 TB of storage</td><td>WeTransfer’s servers</td></tr>
+              <tr><td><b>ngrok Hobbyist</b><span>tunnel</span></td><td>$96</td><td>5 GB a month included, then $0.10 per GB</td><td>Your disk</td></tr>
+              <tr><td><b>Tailscale Funnel</b><span>tunnel</span></td><td>$0</td><td>One public HTTPS URL to a local service</td><td>Your disk</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="sources">List prices, October 2026: <a href="https://wetransfer.com/pricing" rel="noopener">WeTransfer</a> · <a href="https://ngrok.com/pricing" rel="noopener">ngrok</a> · <a href="https://tailscale.com/pricing" rel="noopener">Tailscale</a>. WeTransfer Pro is $12 a month billed monthly. Annual billing may be cheaper. Prices change; check the vendor before you quote this page.</p>
+      </div>
+    </details>
+
+    <p class="sources sources--foot" id="sources-out">Prices checked October 2026. <a href="https://wetransfer.com/pricing" rel="noopener">WeTransfer</a> · <a href="https://ngrok.com/pricing" rel="noopener">ngrok</a> · <a href="https://tailscale.com/pricing" rel="noopener">Tailscale</a>. WeTransfer Pro is $12 a month billed monthly; annual billing may differ.</p>
+  </section>
+
+  <!-- ============ how it works ============ -->
+  <section class="card card--space" id="how" data-reveal>
+    <p class="label"><span>How it works</span><span class="label-note">Your machine</span></p>
+
+    <div class="split split--head">
+      <h2 class="h2">Your file.<br><span class="tint-purple">Your disk.</span></h2>
+      <p class="lede">Files on your computer. A link anywhere. One tunnel between them, and no copy in the middle.</p>
+    </div>
+
+    <div class="space-grid">
+      <div class="diagram" role="img" aria-label="Diagram: your computer holds the folder, the link and the optional PIN. An outbound cloudflared tunnel carries range requests from Cloudflare's edge to the recipient's browser. No storage sits in between.">
+        <div class="diagram-card">
+          <div class="diagram-head"><span class="diagram-dot" aria-hidden="true"></span> Your computer <span class="diagram-tag">local</span></div>
+          <div class="diagram-tiles">
+            <div><span class="tile-k">Folder</span><span class="tile-v">Riverside_2026<br><em>3.2 GB</em></span></div>
+            <div><span class="tile-k">Link</span><span class="tile-v mono">tall-river…/s/9f3a</span></div>
+            <div><span class="tile-k">PIN</span><span class="tile-v">4821 <em>optional</em></span></div>
+          </div>
+          <div class="diagram-pipe" aria-hidden="true"><span>outbound only</span></div>
+          <div class="diagram-node"><b>cloudflared</b><span>quick tunnel · no account</span></div>
+          <div class="diagram-pipe diagram-pipe--bidir" aria-hidden="true"><span>range requests</span><span>bytes</span></div>
+          <div class="diagram-edge">
+            <div><b>Cloudflare edge</b><span>TLS · range requests · no storage</span></div>
+            <div class="diagram-browser"><b>Their browser</b><span>no account, no app</span></div>
+          </div>
+        </div>
+        <p class="diagram-note">Illustrative path. Nothing between the two ends holds a copy.</p>
+      </div>
+
+      <div class="features">
+        <article>
+          <h3>The link is the capability.</h3>
+          <p>A 128-bit id in the URL. Whoever holds it can read the share; revoke it and the same URL answers 410. No public directory, no browse.</p>
+          <a class="arrow-link" href="#limits">Read about access <span aria-hidden="true">→</span></a>
+        </article>
+        <article>
+          <h3>Nothing waits in storage.</h3>
+          <p>The browser asks for ranges; the daemon reads them off disk and streams them back. No object store, no second copy, no warehouse to clean up.</p>
+          <a class="arrow-link" href="#costs">See what that saves <span aria-hidden="true">→</span></a>
+        </article>
+        <article>
+          <h3>It closes itself.</h3>
+          <p>Every share carries an expiry. Eight wrong codes lock it for ten minutes. Stop the daemon and the link dies with it.</p>
+          <a class="arrow-link" href="#limits">Read the limits <span aria-hidden="true">→</span></a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ install ============ -->
+  <section class="card card--install" id="install" data-reveal>
+    <p class="label label--light"><span>Install</span><span class="label-note">Linux · macOS</span></p>
+
+    <div class="install-grid">
+      <div class="install-copy">
+        <h2 class="h2 h2--install">Hand it to<br>your machine.</h2>
+        <p class="install-sub">Pick a folder. Send the link. Keep the file.</p>
+        <p class="install-fine">Python 3.10+, <code>cloudflared</code>, and a systemd user service for the panel. No sudo for the daemon, no network calls except the tunnel and pip.</p>
+        <a class="arrow-link arrow-link--light" href="https://github.com/Aakash-chouksey/tunnelshare#readme" rel="noopener">Read the install notes <span aria-hidden="true">→</span></a>
+        <p class="install-fine install-fine--dim">Alpha software. Shares end when the daemon stops. It is not a CDN and has no SLA.</p>
+      </div>
+
+      <div class="commands">
+        <div class="cmd">
+          <span class="cmd-num">01</span>
+          <code>git clone https://github.com/Aakash-chouksey/tunnelshare.git</code>
+          <button class="copy copy--blue" type="button" data-copy data-copied-label="Copied">Copy</button>
+        </div>
+        <div class="cmd">
+          <span class="cmd-num">02</span>
+          <code>cd tunnelshare &amp;&amp; ./install.sh --enable</code>
+          <button class="copy copy--blue" type="button" data-copy data-copied-label="Copied">Copy</button>
+        </div>
+        <div class="cmd cmd--primary">
+          <span class="cmd-num">03</span>
+          <code>tsctl share ~/Pictures/Riverside --hours 24 --note "Riverside, October"</code>
+          <button class="copy copy--blue" type="button" data-copy data-copied-label="Copied">Copy</button>
+        </div>
+        <p class="cmd-foot">The daemon prints the link. Send it. The code, if you set one, appears separately.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ limits ============ -->
+  <section class="card card--faq" id="limits" data-reveal>
+    <p class="label"><span>Limits</span><span class="label-note">Straight answers</span></p>
+
+    <div class="faq-grid">
+      <div class="faq-copy">
+        <h2 class="h2 h2--faq">A few things<br>to know.</h2>
+        <p class="lede">TunnelShare is a small share daemon, not a platform. These are the boundaries, written down.</p>
+      </div>
+
+      <div class="faq">
+        <details>
+          <summary><span>Does it work while my laptop sleeps?</span><i aria-hidden="true"></i></summary>
+          <div><p>No. The bytes live on your disk, so the machine has to be awake and online while someone downloads. If the lid closes, the download stops.</p></div>
+        </details>
+        <details>
+          <summary><span>Do recipients need an account or an app?</span><i aria-hidden="true"></i></summary>
+          <div><p>No. The link opens in a normal browser. Downloads use plain HTTP range requests, so they can resume after a dropped connection.</p></div>
+        </details>
+        <details>
+          <summary><span>What happens when a link expires?</span><i aria-hidden="true"></i></summary>
+          <div><p>The daemon stops serving it and the URL answers 410. Start a new share for a new link. Expiry is checked per request, not by a background job.</p></div>
+        </details>
+        <details>
+          <summary><span>Is my file uploaded anywhere?</span><i aria-hidden="true"></i></summary>
+          <div><p>No. Cloudflare carries the request and the response, but the bytes are read from your disk on demand. TunnelShare has no object storage and keeps no copy.</p></div>
+        </details>
+        <details>
+          <summary><span>Can I send more than 200 GB?</span><i aria-hidden="true"></i></summary>
+          <div><p>Yes. There is no transfer cap. The one hard ceiling is Cloudflare’s 100 MB request body limit, which applies to uploads into the panel; downloads have no enforced cap.</p></div>
+        </details>
+        <details>
+          <summary><span>Can I lock a link?</span><i aria-hidden="true"></i></summary>
+          <div><p>Yes: <code>--pin 4821</code>. Codes are 4–8 digits, stored as PBKDF2-HMAC-SHA256 with 210k rounds. Eight wrong tries lock the share for ten minutes.</p></div>
+        </details>
+        <details>
+          <summary><span>Can I use my own domain?</span><i aria-hidden="true"></i></summary>
+          <div><p>A quick tunnel gets a random <code>trycloudflare.com</code> hostname that changes on every restart. A named tunnel needs a Cloudflare account and a domain you already own; that is the only path that can add cost.</p></div>
+        </details>
+        <details>
+          <summary><span>What does it cost?</span><i aria-hidden="true"></i></summary>
+          <div><p>Nothing. The Cloudflare free plan carries the tunnel, no account is needed for a quick tunnel, and your disk carries the bytes. <a href="#costs">The bills are compared above.</a></p></div>
+        </details>
+        <details>
+          <summary><span>What will it not do?</span><i aria-hidden="true"></i></summary>
+          <div><p>It will not keep files online while your machine is off, serve as a public CDN, or survive a lost laptop. It will not invite a recipient into a repo or an app; it hands over files.</p></div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ go deeper ============ -->
+  <section class="card card--deeper" id="deeper" data-reveal>
+    <div class="deeper-grid">
+      <div class="deeper-copy">
+        <h2 class="h2 h2--deep">Go deeper.</h2>
+        <p class="lede">The code, the trade-offs, and the bills behind this page.</p>
+      </div>
+
+      <div class="deeper-links">
+        <div class="link-col">
+          <h3>Product</h3>
+          <a href="#how">How it works <span aria-hidden="true">→</span></a>
+          <a href="#use-cases">Use cases <span aria-hidden="true">→</span></a>
+          <a href="#limits">Limits <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="link-col">
+          <h3>Costs</h3>
+          <a href="#costs">Price comparison <span aria-hidden="true">→</span></a>
+          <a href="#receipt">The receipt <span aria-hidden="true">→</span></a>
+          <a href="#sources-out">Sources <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="link-col">
+          <h3>Build</h3>
+          <a href="https://github.com/Aakash-chouksey/tunnelshare" rel="noopener">GitHub <span aria-hidden="true">→</span></a>
+          <a href="https://github.com/Aakash-chouksey/tunnelshare#readme" rel="noopener">README <span aria-hidden="true">→</span></a>
+          <a href="#install">Install <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="link-col">
+          <h3>Project</h3>
+          <a href="https://github.com/Aakash-chouksey/tunnelshare/blob/main/LICENSE" rel="noopener">License <span aria-hidden="true">→</span></a>
+          <a href="https://github.com/Aakash-chouksey/tunnelshare/blob/main/SECURITY.md" rel="noopener">Security <span aria-hidden="true">→</span></a>
+          <a href="https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/" rel="noopener">Cloudflare Tunnel <span aria-hidden="true">→</span></a>
         </div>
       </div>
     </div>
@@ -282,15 +488,65 @@
 </main>
 
 <footer class="footer">
-  <div class="wrap footer-inner">
-    <p>TunnelShare. One daemon, one CLI, one Omarchy panel.</p>
-    <p class="footer-links">
-      <a href="https://github.com/Aakash-chouksey/tunnelshare" rel="noopener">GitHub</a>
-      <span class="sep">/</span>
-      <a href="https://github.com/Aakash-chouksey/tunnelshare/blob/main/README.md" rel="noopener">README</a>
-      <span class="sep">/</span>
-      <span>No analytics on this page</span>
-    </p>
+  <div class="footer-main">
+    <div class="footer-brand">
+      <a class="wordmark wordmark--footer" href="#top">TunnelShare</a>
+      <p>A tunnel for one folder.</p>
+      <p class="micro">Built on Cloudflare Tunnel. MIT licensed.</p>
+    </div>
+
+    <div class="footer-cols">
+      <div>
+        <h3>Product</h3>
+        <a href="#product">Overview</a>
+        <a href="#use-cases">Use cases</a>
+        <a href="#how">How it works</a>
+        <a href="#limits">Limits</a>
+      </div>
+      <div>
+        <h3>Costs</h3>
+        <a href="#costs">Comparison</a>
+        <a href="#receipt">Receipt</a>
+        <a href="#sources-out">Sources</a>
+      </div>
+      <div>
+        <h3>Build</h3>
+        <a href="https://github.com/Aakash-chouksey/tunnelshare" rel="noopener">GitHub</a>
+        <a href="https://github.com/Aakash-chouksey/tunnelshare#readme" rel="noopener">README</a>
+        <a href="#install">Install</a>
+      </div>
+      <div>
+        <h3>Project</h3>
+        <a href="https://github.com/Aakash-chouksey/tunnelshare/blob/main/LICENSE" rel="noopener">License</a>
+        <a href="https://github.com/Aakash-chouksey/tunnelshare/blob/main/SECURITY.md" rel="noopener">Security</a>
+        <a href="#top">Back to top</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-art" aria-hidden="true">
+    <svg viewBox="0 0 1200 300" preserveAspectRatio="xMidYMax slice">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <ellipse cx="880" cy="270" rx="120" ry="36"/>
+        <ellipse cx="880" cy="270" rx="180" ry="54"/>
+        <ellipse cx="880" cy="270" rx="250" ry="75"/>
+        <ellipse cx="880" cy="270" rx="330" ry="99"/>
+        <ellipse cx="880" cy="270" rx="420" ry="126"/>
+        <ellipse cx="880" cy="270" rx="520" ry="156"/>
+        <ellipse cx="880" cy="270" rx="630" ry="189"/>
+        <path d="M0 300 Q 300 214 620 246 T 1200 236"/>
+        <path d="M0 326 Q 320 250 660 276 T 1200 268"/>
+      </g>
+      <g fill="none" stroke="currentColor" stroke-width="0.6" opacity="0.55">
+        <path d="M880 270 L 160 40 M880 270 L 340 0 M880 270 L 640 20 M880 270 L 980 0 M880 270 L 1200 60"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="footer-bottom">
+    <span>© <span data-year>2026</span> TunnelShare</span>
+    <span class="footer-mid">Not a CDN. Not a storage service.</span>
+    <a href="#top">Back to top <span aria-hidden="true">↑</span></a>
   </div>
 </footer>
 
