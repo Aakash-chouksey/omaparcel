@@ -9,7 +9,7 @@ action goes through `tsctl`, so the daemon stays the only writer.
 
 ## Install
 
-From the TunnelShare checkout:
+From the Omatunnel checkout:
 
 ```sh
 ./install.sh --enable
@@ -39,7 +39,7 @@ omarchy-shell codejack.tunnelshare toggle
 The repo root carries a manifest for `omarchy plugin add`:
 
 ```sh
-omarchy plugin add https://github.com/Aakash-chouksey/tunnelshare.git
+omarchy plugin add https://github.com/Aakash-chouksey/omatunnel.git
 ```
 
 Install the daemon first (`./install.sh --enable`) so `tsctl` and the user unit

@@ -26,8 +26,8 @@ On Arch and Omarchy: `sudo pacman -S cloudflared`.
 ## Run from source, no systemd
 
 ```bash
-git clone https://github.com/Aakash-chouksey/tunnelshare.git
-cd tunnelshare
+git clone https://github.com/Aakash-chouksey/omatunnel.git
+cd omatunnel
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 .venv/bin/python tsd.py
@@ -79,8 +79,8 @@ There is no systemd user unit. A small LaunchAgent keeps it alive:
   <key>Label</key><string>com.codejack.tunnelshare</string>
   <key>ProgramArguments</key>
   <array>
-    <string>/Users/YOU/code/tunnelshare/.venv/bin/python</string>
-    <string>/Users/YOU/code/tunnelshare/tsd.py</string>
+    <string>/Users/YOU/code/omatunnel/.venv/bin/python</string>
+    <string>/Users/YOU/code/omatunnel/tsd.py</string>
   </array>
   <key>RunAtLoad</key><true/>
   <key>KeepAlive</key><true/>
@@ -96,7 +96,7 @@ launchctl kickstart -k gui/$(id -u)/com.codejack.tunnelshare
 ```
 
 A native menu bar app is tracked in
-[issue #2](https://github.com/Aakash-chouksey/tunnelshare/issues/2). Until it
+[issue #2](https://github.com/Aakash-chouksey/omatunnel/issues/2). Until it
 lands, use `tsctl.py` and the friend page.
 
 ## Named tunnel

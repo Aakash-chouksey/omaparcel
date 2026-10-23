@@ -1,6 +1,6 @@
 ### Repository URL
 
-https://github.com/Aakash-chouksey/tunnelshare
+https://github.com/Aakash-chouksey/omatunnel
 
 ### Category
 

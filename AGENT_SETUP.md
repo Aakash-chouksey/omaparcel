@@ -8,7 +8,7 @@ The prompt is written to be safe: it asks before sudo, never deletes your files,
 and cleans up the test share.
 
 ```text
-Install TunnelShare from https://github.com/Aakash-chouksey/tunnelshare on this machine.
+Install TunnelShare from https://github.com/Aakash-chouksey/omatunnel on this machine.
 
 Rules:
 - Do not delete user files. Do not touch files outside the TunnelShare checkout and the paths the installer manages.
@@ -17,7 +17,7 @@ Rules:
 
 Steps:
 1. Detect the OS and whether Omarchy is present. Check git, python3 (3.10 or newer), python3-venv, pip, cloudflared, and systemctl --user. Report what is missing.
-2. Clone the repo to ~/code/tunnelshare if it is not already there.
+2. Clone the repo to ~/code/omatunnel if it is not already there.
 3. Run ./install.sh --enable.
 4. Export PATH="$HOME/.local/bin:$PATH". Wait up to 90 seconds for:
    tsctl status --json | python3 -c 'import json,sys; print(json.load(sys.stdin).get("public_base",""))'

@@ -1,8 +1,7 @@
 # Omarchy marketplace submission
 
 This is the exact path to list Omatunnel at
-[plugins.omarchy.org](https://plugins.omarchy.org/). The submission is prepared
-but not submitted.
+[plugins.omarchy.org](https://plugins.omarchy.org/). The submission is omacom/omarchy-plugin-marketplace#12689.
 
 ## Before submitting
 

@@ -3,7 +3,7 @@
 Share a file or a folder from your own machine. Your friend opens a link and
 downloads. Nothing is uploaded to a third party, and every link expires.
 
-[![tests](https://github.com/Aakash-chouksey/tunnelshare/actions/workflows/test.yml/badge.svg)](https://github.com/Aakash-chouksey/tunnelshare/actions/workflows/test.yml)
+[![tests](https://github.com/Aakash-chouksey/omatunnel/actions/workflows/test.yml/badge.svg)](https://github.com/Aakash-chouksey/omatunnel/actions/workflows/test.yml)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 | Omarchy panel | Friend page |
@@ -17,8 +17,8 @@ panel is a thin client over `tsctl`.
 ## Quick start on Omarchy
 
 ```bash
-git clone https://github.com/Aakash-chouksey/tunnelshare.git
-cd tunnelshare
+git clone https://github.com/Aakash-chouksey/omatunnel.git
+cd omatunnel
 ./install.sh --enable
 omarchy restart shell
 ```
@@ -31,8 +31,8 @@ message.
 ## Quick start on any Linux or macOS
 
 ```bash
-git clone https://github.com/Aakash-chouksey/tunnelshare.git
-cd tunnelshare
+git clone https://github.com/Aakash-chouksey/omatunnel.git
+cd omatunnel
 ./install.sh --enable          # Linux with systemd
 tsctl share ~/Pictures/Riverside --hours 24 --note "Riverside, October"
 ```
@@ -41,7 +41,7 @@ tsctl share ~/Pictures/Riverside --hours 24 --note "Riverside, October"
 
 macOS has no systemd. Use the manual path in
 [docs/manual-setup.md](docs/manual-setup.md) until the menu bar app lands
-([issue #2](https://github.com/Aakash-chouksey/tunnelshare/issues/2)).
+([issue #2](https://github.com/Aakash-chouksey/omatunnel/issues/2)).
 
 ## Let an agent install it
 
@@ -234,7 +234,7 @@ The repo root is a valid Omarchy plugin source. Install the daemon first, then
 add Omatunnel:
 
 ```bash
-omarchy plugin add https://github.com/Aakash-chouksey/tunnelshare.git
+omarchy plugin add https://github.com/Aakash-chouksey/omatunnel.git
 ```
 
 Omatunnel alone shows `tsctl is not on PATH` until the daemon is installed. The
