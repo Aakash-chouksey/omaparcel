@@ -11,6 +11,9 @@ venv/
 .owner-token
 .publish-token
 .commandcode/
+.ruff_cache/
+.pytest_cache/
+/.pi/skills/
 
 /.pi/teams/state/
 /.pi/teams/cache/

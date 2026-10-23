@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "id": "codejack.tunnelshare",
   "name": "Omatunnel",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "codejack",
   "license": "MIT",
-  "description": "Omatunnel is the Omarchy bar panel for TunnelShare. Share files and folders with expiry, an optional code, and live download progress. Requires the TunnelShare daemon and tsctl.",
+  "description": "Omatunnel is the Omarchy bar panel for TunnelShare. Share files and folders with expiry, an optional code, and live download progress. Up to 100 GB per file, 5000 files per share. Requires the TunnelShare daemon and tsctl.",
   "kinds": [
     "bar-widget"
   ],
@@ -14,7 +14,7 @@
   },
   "barWidget": {
     "displayName": "Omatunnel",
-    "description": "Share files and folders from the bar, with expiry, an optional code, and live download progress.",
+    "description": "Share files and folders from the bar, with expiry, an optional code, and live download progress. Up to 100 GB per file, 5000 files per share.",
     "category": "Network",
     "aliases": [
       "share",

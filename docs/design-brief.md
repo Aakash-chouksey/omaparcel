@@ -3,7 +3,7 @@
 Two candidate directions. Each prototype is a bakeoff artifact, not production
 code. One wins, then gets ported into Flask templates.
 
-Read `/home/codejack/.agents/skills-parked/misc/anti-ui-slop/SKILL.md` first.
+Read the anti-ui-slop skill first.
 Product UI register: the task is download one or more files. Familiar controls,
 no decoration that does not serve the task. Spend the distinction in one place
 per direction and keep the rest quiet.

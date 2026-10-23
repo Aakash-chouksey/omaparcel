@@ -44,9 +44,10 @@ from flask import (
 )
 from werkzeug.serving import make_server
 
-APP_VERSION = "0.2.0"
+APP_VERSION = "0.2.1"
 API = 1
 MAX_ENTRIES = 5000
+MAX_FILE_BYTES = int(os.environ.get("TS_MAX_BYTES", 100_000_000_000))
 DEFAULT_HOURS = 24
 MAX_HOURS = 720
 NOTE_MAX = 200
@@ -272,11 +273,13 @@ def index_paths(paths):
                     resolved = os.path.realpath(path)
                     if resolved != path and not _inside(resolved, real):
                         continue  # symlink pointing out of the shared folder
-                    rows.append(_entry_row(resolved, os.path.relpath(path, real)))
+                    row = _entry_row(resolved, os.path.relpath(path, real))
+                    rows.append(_check_size(row))
                     if len(rows) > MAX_ENTRIES:
                         raise ValueError(f"more than {MAX_ENTRIES} entries, share a smaller folder")
         elif os.path.isfile(real):
-            rows.append(_entry_row(real, os.path.basename(real)))
+            row = _entry_row(real, os.path.basename(real))
+            rows.append(_check_size(row))
         else:
             raise ValueError(f"not a file or folder: {raw}")
     if not rows:
@@ -298,6 +301,15 @@ def _entry_row(path, rel):
         "size": os.path.getsize(path),
         "mime": mimetypes.guess_type(path)[0] or "application/octet-stream",
     }
+
+
+def _check_size(row):
+    if row["size"] > MAX_FILE_BYTES:
+        raise ValueError(
+            f"{row['rel']} is {row['size']} bytes, larger than the "
+            f"{MAX_FILE_BYTES} byte limit"
+        )
+    return row
 
 
 def create_share(db, paths, hours, note="", pin=""):

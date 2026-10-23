@@ -121,7 +121,8 @@ Validation at the boundary:
 
 - `paths` is a non-empty list of existing files or folders.
 - A folder is indexed once, recursively, skipping dot entries. Maximum 5000
-  entries, then 400 with a clear message.
+  entries, then 400 with a clear message. Each file must be at most 100 GB
+  (100,000,000,000 bytes; `TS_MAX_BYTES` overrides), then 400.
 - Symlinks resolving outside the shared folder are skipped.
 - `hours` is a number, `0 < hours <= 720`, default from config.
 - `note` is a string, at most 200 characters.

@@ -133,6 +133,32 @@ through a quick tunnel measured 3.1 MB/s. Four parallel range requests reached
 file therefore takes about 1.8 hours. The daemon serves from disk at over
 1 GB/s on loopback, so the network is the limit, not the code.
 
+## Limits
+
+| Limit | Value |
+|---|---|
+| Largest single file | 100 GB (default; `TS_MAX_BYTES` overrides) |
+| Entries per share | 5000 files or folders |
+| Total size per share | Your disk; the daemon sets no total cap |
+| Link lifetime | 1 to 720 hours (30 days); default 24 |
+| Downloads per link | No cap; revoke or let it expire |
+| Active shares | No hard cap; the database and disk are the limit |
+| Parallel downloads | 200 in-flight requests on a quick tunnel, shared by every visitor; your uplink is the real limit |
+| Shares per day | No quota; your uplink sets the practical limit |
+| PIN | 4 to 8 digits; 8 tries, then a 10 minute lock |
+
+At the measured 3.1 MB/s, a saturated link moves about 267 GB per day: 13
+files of 20 GB, or 2 files of 100 GB. Parallel downloads share that one uplink.
+
+100 GB is the per-file default. The daemon stores no copy; it streams the file
+from your disk. `TS_MAX_BYTES` changes the cap. See [`LIMITS.md`](LIMITS.md) for
+the full table and the Cloudflare side.
+
+The free-plan 100 MB request body cap applies to uploads into Cloudflare. This
+daemon never uploads the file, so that cap does not limit a share. The response
+has no enforced size limit. Cloudflare's free-zone terms still treat very large
+media as a paid service.
+
 ## API
 
 Public, tunneled:
@@ -155,6 +181,7 @@ Admin, loopback only, needs `X-TS-Token`:
 bash tests/test_api.sh       # real HTTP against a temp data dir
 bash tests/test_progress.sh  # progress during a throttled download
 bash tests/test_tunnel.sh    # one real quick tunnel fetch
+bash tests/test_limits.sh    # the per-file cap rejects one oversized file
 ```
 
 `tests/test_api.sh` covers byte-identical downloads, Range, folder indexing,

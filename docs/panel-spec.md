@@ -95,8 +95,8 @@ One panel, width 380, max height 560, vertical scroll for the list.
 
 Follow the shell. Use `Panel`, `PanelSectionHeader`, `PanelActionButton`,
 `ToggleSwitch`, `TextField`, `ConfirmDialog`, and the `Color`, `Style`
-singletons. Do not hard code colors or fonts. The sample plugin
-`~/orca/projects/omarchy-sound-boost` shows the accepted structure, including
+singletons. Do not hard code colors or fonts. A working sample plugin
+shows the accepted structure, including
 the `bar`, `foreground`, `urgent`, and `fontFamily` properties and the
 `moduleName` and `ipcTarget` settings.
 

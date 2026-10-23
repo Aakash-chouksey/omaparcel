@@ -110,6 +110,9 @@ the tunnel starts, accent when live, urgent on a tunnel error.
 
 ## Limits
 
+The daemon sets 100 GB per file (`TS_MAX_BYTES`), 5000 entries per share, and
+720 hours. The root README and [`LIMITS.md`](../LIMITS.md) have the full table.
+
 - A row without a note reads `3 files`. The progress line names the active
   file.
 - A path that itself contains a newline cannot survive the line-per-path output

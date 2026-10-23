@@ -19,6 +19,8 @@ jobs:
         run: bash tests/test_api.sh
       - name: Progress test
         run: bash tests/test_progress.sh
+      - name: Limits test
+        run: bash tests/test_limits.sh
       - name: Compile
         run: python -m py_compile tsd.py tsctl.py
       - name: Manifests parse
