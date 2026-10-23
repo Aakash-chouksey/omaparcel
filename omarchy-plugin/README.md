@@ -15,14 +15,18 @@ From the Omatunnel checkout:
 ./install.sh --enable
 ```
 
-That links this folder to `~/.config/omarchy/plugins/codejack.tunnelshare` and
-enables the plugin. Without `--enable`, link and enable it yourself:
+That installs a clean copy of the plugin into
+`~/.config/omarchy/plugins/codejack.tunnelshare` and enables it. Without
+`--enable`, install and enable it yourself:
 
 ```sh
 mkdir -p ~/.config/omarchy/plugins
-ln -sfn "$PWD/omarchy-plugin" ~/.config/omarchy/plugins/codejack.tunnelshare
-omarchy plugin validate omarchy-plugin
-omarchy plugin enable codejack.tunnelshare --yes
+rm -rf ~/.config/omarchy/plugins/codejack.tunnelshare
+mkdir -p ~/.config/omarchy/plugins/codejack.tunnelshare
+cp manifest.json ~/.config/omarchy/plugins/codejack.tunnelshare/manifest.json
+cp -a omarchy-plugin ~/.config/omarchy/plugins/codejack.tunnelshare/
+omarchy plugin validate ~/.config/omarchy/plugins/codejack.tunnelshare
+omarchy plugin enable codejack.tunnelshare
 ```
 
 Reload the shell (`omarchy restart shell`) or the plugin, then the share icon
@@ -43,9 +47,9 @@ omarchy plugin add https://github.com/Aakash-chouksey/omatunnel.git
 ```
 
 Install the daemon first (`./install.sh --enable`) so `tsctl` and the user unit
-exist. The store path adds only the panel. The root manifest points at
-`omarchy-plugin/BarWidget.qml`; the manifest in this folder is for the local
-symlink. Keep the two in sync.
+exist. The store path adds only the panel. The root manifest is the only
+manifest. It points at `omarchy-plugin/BarWidget.qml`, and the local install
+copies the plugin files into the plugin directory.
 
 ## Requirements
 

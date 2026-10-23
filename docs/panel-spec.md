@@ -121,7 +121,7 @@ No animation in the bar. The panel may fade in through `Panel` as usual.
 
 ## Verification
 
-1. `omarchy plugin validate omarchy-plugin` prints nothing and exits 0.
+1. `omarchy plugin validate <clean-copy>` prints nothing and exits 0.
 2. Symlink, enable, restart the shell or reload the plugin. The bar icon appears.
 3. Toggle on. `tsctl status --json` reports `tunnel.state` up within 15 seconds.
 4. Share a folder with spaces in the name. Copy the link, fetch it with curl from

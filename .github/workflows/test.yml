@@ -26,4 +26,3 @@ jobs:
       - name: Manifests parse
         run: |
           python -m json.tool manifest.json >/dev/null
-          python -m json.tool omarchy-plugin/manifest.json >/dev/null

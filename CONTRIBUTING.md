@@ -27,10 +27,6 @@ test starts a real quick tunnel and cleans up after itself.
 
 For Omatunnel:
 
-```bash
-omarchy plugin validate omarchy-plugin
-```
-
 To check the marketplace layout, copy the repo root without `.venv`, `.git`,
 and runtime files, then run `omarchy plugin validate <copy>`.
 
@@ -49,8 +45,7 @@ unless the standard library or an existing dependency cannot do the job.
 ## Pull requests
 
 - Keep the tests green.
-- Keep the plugin manifest versions in sync: `manifest.json` and
-  `omarchy-plugin/manifest.json`.
+- Keep one plugin manifest at the repository root.
 - Do not commit secrets, tokens, databases, uploads, or screenshots with real
   file names.
 - Update the README or docs when behavior changes.

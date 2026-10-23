@@ -5,7 +5,7 @@ This is the exact path to list Omatunnel at
 
 ## Before submitting
 
-- The repository is public and has a root `manifest.json` (version 1.1.1) whose
+- The repository is public and has a root `manifest.json` (version 1.1.2) whose
   entry point exists.
 - The root `README.md` has installation and removal instructions.
 - The root `LICENSE` is MIT.

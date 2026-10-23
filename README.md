@@ -213,8 +213,8 @@ python3 -m venv .venv
 
 The design and contracts live in `docs/`: `direction.md`, `contract.md`,
 `design-brief.md`, `panel-spec.md`. The plugin is a bar widget; validate it with
-`omarchy plugin validate omarchy-plugin`, or validate the store layout from a
-clean copy of the repo root.
+`omarchy plugin validate <clean-copy>`, where the copy excludes `.venv`, `.git`,
+and runtime files.
 
 ## Uninstall
 

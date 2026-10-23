@@ -124,10 +124,13 @@ step "linked $BIN_DIR/tsctl"
 
 # 8. Omarchy plugin symlink
 if command -v omarchy >/dev/null 2>&1 || [[ -d "$XDG_CONFIG_HOME/omarchy" ]]; then
-  if [[ -f "$SRC/omarchy-plugin/manifest.json" && -f "$SRC/omarchy-plugin/BarWidget.qml" ]]; then
+  if [[ -f "$SRC/manifest.json" && -f "$SRC/omarchy-plugin/BarWidget.qml" ]]; then
     mkdir -p "$XDG_CONFIG_HOME/omarchy/plugins"
-    ln -sfn "$SRC/omarchy-plugin" "$PLUGIN_LINK"
-    step "linked $PLUGIN_LINK"
+    rm -rf "$PLUGIN_LINK"
+    mkdir -p "$PLUGIN_LINK"
+    cp "$SRC/manifest.json" "$PLUGIN_LINK/manifest.json"
+    cp -a "$SRC/omarchy-plugin" "$PLUGIN_LINK/"
+    step "installed $PLUGIN_LINK"
   else
     step "warning: omarchy detected, but the plugin manifest or entry point is missing; skipped"
   fi
