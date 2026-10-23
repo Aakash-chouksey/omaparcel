@@ -6,11 +6,12 @@ but not submitted.
 
 ## Before submitting
 
-- The repository is public and has a root `manifest.json` (version 1.0.0) whose
+- The repository is public and has a root `manifest.json` (version 1.1.1) whose
   entry point exists.
 - The root `README.md` has installation and removal instructions.
 - The root `LICENSE` is MIT.
-- The root `preview.png` is the panel screenshot. The marketplace optimizes it.
+- The root `preview.png` is the 1600x900 listing image. It shows the panel and
+  the friend page. The marketplace optimizes it.
 - The display name is `Omatunnel`. The permanent plugin ID is
   `codejack.tunnelshare`. It is outside the reserved `omarchy.*` namespace and
   is the ID used by the local install.
