@@ -95,9 +95,8 @@ launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.codejack.tunnelshare
 launchctl kickstart -k gui/$(id -u)/com.codejack.tunnelshare
 ```
 
-A native menu bar app is tracked in
-[issue #2](https://github.com/Aakash-chouksey/omatunnel/issues/2). Until it
-lands, use `tsctl.py` and the friend page.
+A native menu bar app is available in `macos-app/` ([issue #2](https://github.com/Aakash-chouksey/omatunnel/issues/2)).
+Install via the pre-built `Omatunnel.dmg` or build from source with `./macos-app/build_dmg.sh`.
 
 ## Named tunnel
 

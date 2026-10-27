@@ -15,6 +15,22 @@ venv/
 .pytest_cache/
 /.pi/skills/
 
+*.log
+.DS_Store
+videos/
+
+# macOS / Xcode
+*.xcuserdata
+DerivedData/
+
+# Omatunnel Build Outputs & Packaging
+_archive/
+*.dmg
+BackendBundle/
+build/
+*.spec
+dist/
+dist_bin/
 /.pi/teams/state/
 /.pi/teams/cache/
 /.pi/teams/worktrees/
