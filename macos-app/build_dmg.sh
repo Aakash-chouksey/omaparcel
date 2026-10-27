@@ -49,23 +49,33 @@ echo "   ✔ Xcode project: $XCODEPROJ"
 echo ""
 echo "▶ [2/7] Compiling standalone backend executables (PyInstaller)..."
 
-VENV_DIR="$REPO_ROOT/.venv"
-if [[ ! -f "$VENV_DIR/bin/pyinstaller" ]]; then
-  echo "   ↳ Installing PyInstaller in $VENV_DIR..."
-  "$VENV_DIR/bin/pip" install --quiet pyinstaller
+PYINSTALLER_BIN=""
+if command -v pyinstaller &>/dev/null; then
+  PYINSTALLER_BIN="$(command -v pyinstaller)"
+elif [[ -x "$REPO_ROOT/.venv/bin/pyinstaller" ]]; then
+  PYINSTALLER_BIN="$REPO_ROOT/.venv/bin/pyinstaller"
+else
+  VENV_DIR="$REPO_ROOT/.venv"
+  if [[ ! -d "$VENV_DIR" ]]; then
+    echo "   ↳ Creating virtual environment in $VENV_DIR..."
+    python3 -m venv "$VENV_DIR"
+  fi
+  echo "   ↳ Installing dependencies & PyInstaller..."
+  "$VENV_DIR/bin/pip" install --quiet -r "$REPO_ROOT/requirements.txt" pyinstaller
+  PYINSTALLER_BIN="$VENV_DIR/bin/pyinstaller"
 fi
 
 mkdir -p "$DIST_BIN_DIR"
 
 echo "   ↳ Compiling standalone tsctl binary..."
-"$VENV_DIR/bin/pyinstaller" --onefile --noconfirm \
+"$PYINSTALLER_BIN" --onefile --noconfirm \
   --distpath "$DIST_BIN_DIR" \
   --workpath "$BUILD_DIR/pyinstaller_work" \
   --specpath "$BUILD_DIR/pyinstaller_spec" \
   "$REPO_ROOT/tsctl.py" > /dev/null
 
 echo "   ↳ Compiling standalone tsd daemon binary..."
-"$VENV_DIR/bin/pyinstaller" --onefile --noconfirm \
+"$PYINSTALLER_BIN" --onefile --noconfirm \
   --distpath "$DIST_BIN_DIR" \
   --workpath "$BUILD_DIR/pyinstaller_work" \
   --specpath "$BUILD_DIR/pyinstaller_spec" \
@@ -112,12 +122,12 @@ RESOURCES="$APP_PATH/Contents/Resources"
 mkdir -p "$RESOURCES"
 
 # Embed standalone tsctl & tsd
-cp "$DIST_BIN_DIR/tsctl" "$RESOURCES/tsctl"
-cp "$DIST_BIN_DIR/tsd" "$RESOURCES/tsd"
+cp -f "$DIST_BIN_DIR/tsctl" "$RESOURCES/tsctl"
+cp -f "$DIST_BIN_DIR/tsd" "$RESOURCES/tsd"
 chmod +x "$RESOURCES/tsctl" "$RESOURCES/tsd"
 
 # Embed cloudflared
-cp "$CLOUDFLARED_SRC" "$RESOURCES/cloudflared"
+cp -f "$CLOUDFLARED_SRC" "$RESOURCES/cloudflared"
 chmod +x "$RESOURCES/cloudflared"
 
 # Embed templates and static for the web interface
