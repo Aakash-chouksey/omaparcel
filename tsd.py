@@ -59,7 +59,14 @@ BACKOFF = (1, 2, 4, 8, 16, 30)
 LOG_LINES = 200
 QUICK_URL = re.compile(r"https://[a-z0-9][a-z0-9-]*\.trycloudflare\.com", re.I)
 HOME_CONFIG = os.path.expanduser("~/.config/tunnelshare")
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+if getattr(sys, "frozen", False):
+    _exe_dir = os.path.dirname(os.path.abspath(sys.executable))
+    if os.path.exists(os.path.join(_exe_dir, "templates")):
+        BASE_DIR = _exe_dir
+    else:
+        BASE_DIR = getattr(sys, "_MEIPASS", _exe_dir)
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_CONFIG = {
     "public_port": 8080,
     "admin_port": 8081,
@@ -444,10 +451,32 @@ class Tunnel:
         print(f"[tunnel] {line}", flush=True)
 
     def _command(self):
+        bin_path = "cloudflared"
+        _here = BASE_DIR
+        candidates = [
+            os.path.join(_here, "cloudflared"),
+            os.path.join(_here, "..", "cloudflared"),
+            "/opt/homebrew/bin/cloudflared",
+            "/usr/local/bin/cloudflared",
+            "/usr/bin/cloudflared",
+        ]
+        for candidate in candidates:
+            if os.path.exists(candidate):
+                bin_path = candidate
+                if not os.access(bin_path, os.X_OK):
+                    try:
+                        os.chmod(bin_path, 0o755)
+                    except OSError:
+                        pass
+                break
+        else:
+            found = shutil.which("cloudflared")
+            if found:
+                bin_path = found
         if self.mode() == "named":
-            return ["cloudflared", "tunnel", "run", self.name]
+            return [bin_path, "tunnel", "run", self.name]
         return [
-            "cloudflared", "tunnel", "--url", f"http://127.0.0.1:{self.port}", "--output", "json",
+            bin_path, "tunnel", "--url", f"http://127.0.0.1:{self.port}", "--output", "json",
         ]
 
     def _env(self):

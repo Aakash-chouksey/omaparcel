@@ -78,7 +78,7 @@ ok "single-file share downloads byte-identical bytes"
 # ------------------------------------------------------------------ 2
 code=$(curl -s -o "$TMP/part" -w '%{http_code}' -H 'Range: bytes=100-199' "$PUB/s/$id/f/0")
 [[ $code == 206 ]] || fail "range returned $code, want 206"
-[[ $(stat -c%s "$TMP/part") == 100 ]] || fail "range body is not 100 bytes"
+[[ $(wc -c < "$TMP/part" | tr -d ' ') == 100 ]] || fail "range body is not 100 bytes"
 dd if="$TMP/blob.bin" of="$TMP/expect" bs=1 skip=100 count=100 status=none
 cmp -s "$TMP/expect" "$TMP/part" || fail "range slice differs"
 ok "range request returns 206 and the right slice"
